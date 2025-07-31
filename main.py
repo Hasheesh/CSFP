@@ -1,17 +1,23 @@
-from optparse import Option
 import os
-from pathlib import Path
-from random import choice
 import time
-
-from sympy.polys.polytools import options
 
 # Import all engines
 from llm_engine import LLM
-from img_read_engine import ImageReader
 from models import get_model_path
 
 # Placeholder classes for engines that are not yet implemented
+class ImageReader:
+    """Image reading/OCR engine placeholder"""
+    def __init__(self, model_path=None):
+        self.model_path = model_path
+    
+    def process_input(self, image_path: str) -> str:
+        # Placeholder implementation
+        print(f"Processing image from: {image_path}")
+        # Simulate OCR processing
+        time.sleep(1)
+        return f"Extracted text from image: {image_path}"
+
 class STTEngine:
     """Speech-to-Text engine placeholder"""
     def __init__(self, model_path=None):
