@@ -49,3 +49,15 @@ class LLM:
         print(f"\n\nGenerated in {time.time()-start_time:.2f}s")
         return answer.strip()
 
+# TODO
+# def load_model(self, model_path: str) -> bool:
+#     """Load a different model from the specified path."""
+    
+# def unload_model(self):
+#     """Unload the current model to free memory."""
+    
+    
+# def get_model_info(self) -> dict:
+#     """Get information about the currently loaded model."""
+
+# update_config()
