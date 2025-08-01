@@ -1,1 +1,16 @@
 models/llm/gemma-3/google_gemma-3n-E2B-it-Q4_K_M.gguf
+models/llm/phi-4-mini/Phi-4-mini.gguf
+__pycache__/img_read_engine.cpython-313.pyc
+__pycache__/llm_engine.cpython-313.pyc
+__pycache__/models.cpython-313.pyc
+__pycache__/stt_engine.cpython-313.pyc
+models/img_reader/PP-OCRv5_mobile_det_infer.tar
+models/img_reader/PP-OCRv5_mobile_rec_infer.tar
+models/img_reader/PP-OCRv5_mobile_det_infer/inference.json
+models/img_reader/PP-OCRv5_mobile_det_infer/inference.pdiparams
+models/img_reader/PP-OCRv5_mobile_det_infer/inference.yml
+models/img_reader/PP-OCRv5_mobile_rec_infer/inference.json
+models/img_reader/PP-OCRv5_mobile_rec_infer/inference.pdiparams
+models/img_reader/PP-OCRv5_mobile_rec_infer/inference.yml
+models/llm/gemma-2/gemma-2-2b.gguf
+models/llm/gemma-3/google_gemma-3-4b.gguf
