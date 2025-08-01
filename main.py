@@ -4,7 +4,7 @@ import time
 # Import all engines
 from llm_engine import LLM
 from models import get_model_path
-
+from img_read_engine import ImageReader
 # Placeholder classes for engines that are not yet implemented
 
 
@@ -20,6 +20,7 @@ class AITutor:
     def __init__(self):
         # Initialize all engines
         self.llm_tutor = LLM()
+        self.image_reader = ImageReader()
 
     
 
@@ -44,17 +45,18 @@ class AITutor:
 
                     if question:
                         print("\n" + "="*50)
-                        response = self.process_text_input(question)
-                        print("="*50)
-                        print(f"Final Response: {response}")
+                        response = self.llm_tutor.process_input(question)
+                        print("-"*50)
+                        print(f"Tutor: {response}")
 
                 elif option == "2":
+                
                     path = input("Image Path: ").strip()
                     
                     if path:
-                        print("\n" + "="*50)
-                        response = self.process_image_input(path)
-                        print("="*50)
+                        extracted_text = self.image_reader.process_input(path)
+                        response = self.llm_tutor.process_input(extracted_text) 
+                        print("-"*50)
                         print(f"Final Response: {response}")
 
                 elif option == "3":
@@ -63,7 +65,7 @@ class AITutor:
                     if path:
                         print("\n" + "="*50)
                         response = self.process_audio_input(path)
-                        print("="*50)
+                        print("-"*50)
                         print(f"Final Response: {response}")
 
                 elif option.lower() == 'quit':
