@@ -29,6 +29,7 @@ output.wav
 test.wav
 .gitignore
 techno.wav
+__pycache__
 __pycache__/audio_utils.cpython-312.pyc
 .gitignore
 __pycache__/model_registery.cpython-312.pyc
