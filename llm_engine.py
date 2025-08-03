@@ -2,16 +2,26 @@ import os
 import time
 from llama_cpp import Llama
 import torch
+from model_registery import ModelRegistery
 
 class LLM:
-    def __init__(self, model_path="/home/gulabo/Desktop/CSFP/models/llm/phi-4-mini/Phi-4-mini.gguf"):
+    def __init__(self, model_type, model_name):
+
+        self.llm = None
+        self.model_type = model_type
+        self.model_name = model_name
+        self.model_reg = ModelRegistery()
+        self.first_load = True
+        
+    def load(self):
         # Hardware optimization
         os.environ["OMP_NUM_THREADS"] = "16"
         # os.environ["GGML_OPENBLAS"] = "1"
         torch.set_num_threads(16)
 
+        model_path = self.model_reg.get_model_path(self.model_type, self.model_name)
         # Initialize model with proper configuration
-        self.model = Llama(
+        self.llm = Llama(
             model_path=model_path,
             n_ctx=2048,
             n_threads=4,  # Match Pi 5's 4 cores
@@ -25,6 +35,10 @@ class LLM:
         )
 
     def process_input(self, question: str) -> str:
+        if self.first_load:
+            self.load() 
+        self.first_load = not self.first_load
+        
         prompt = (
             "<|system|>You are a patient homework tutor. "
             "Explain concepts clearly for 12-year-olds.<|end|>\n"
@@ -34,7 +48,7 @@ class LLM:
         )
         answer = ""
         start_time = time.time()
-        stream = self.model.create_completion(
+        stream = self.llm.create_completion(
             prompt,
             max_tokens=256,
             temperature=0.7,

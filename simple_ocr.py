@@ -10,9 +10,9 @@ import json
 # ocr = PaddleOCR(device="gpu") # Enables GPU acceleration for model inference via device parameter
 ocr = PaddleOCR(
     text_detection_model_name="PP-OCRv5_mobile_det",
-    text_detection_model_dir="./models/img_reader/PP-OCRv5_mobile_det_infer",
+    text_detection_model_dir="./models/ocr/PP-OCRv5_mobile_det_infer",
     text_recognition_model_name="PP-OCRv5_mobile_rec",
-    text_recognition_model_dir="./models/img_reader/PP-OCRv5_mobile_rec_infer",
+    text_recognition_model_dir="./models/ocr/PP-OCRv5_mobile_rec_infer",
     use_doc_orientation_classify=False,
     use_doc_unwarping=False,
     use_textline_orientation=False,

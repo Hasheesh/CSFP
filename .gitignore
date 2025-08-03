@@ -29,3 +29,13 @@ output.wav
 test.wav
 .gitignore
 techno.wav
+__pycache__/audio_utils.cpython-312.pyc
+.gitignore
+__pycache__/model_registery.cpython-312.pyc
+__pycache__/speech_recognizer.cpython-312.pyc
+.gitignore
+__pycache__/llm_engine.cpython-312.pyc
+.gitignore
+__pycache__/speech_synthesizer.cpython-312.pyc
+__pycache__/translator.cpython-312.pyc
+__pycache__/vision_processor.cpython-312.pyc

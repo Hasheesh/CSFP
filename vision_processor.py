@@ -4,25 +4,33 @@ import json
 import time
 
 from paddleocr import PaddleOCR
+from model_registery import ModelRegistery
 
-class ImageReader:
+
+class VisionProcessor:
     def __init__(self):
         self.ocr = None
-        self._load_ocr_model()
+        self.model_reg = ModelRegistery()
+        self.first_load = True
         
-    def _load_ocr_model(self):
+    def load(self):
         """Initialize and load the PaddleOCR model with PP-OCRv5_mobile models"""
         self.ocr = PaddleOCR(
             text_detection_model_name="PP-OCRv5_mobile_det",
-            text_detection_model_dir="./models/img_reader/PP-OCRv5_mobile_det_infer",
+            text_detection_model_dir=self.model_reg.get_model_path("ocr", "PP-OCRv5_mobile_det"),
             text_recognition_model_name="PP-OCRv5_mobile_rec",
-            text_recognition_model_dir="./models/img_reader/PP-OCRv5_mobile_rec_infer",
+            text_recognition_model_dir=self.model_reg.get_model_path("ocr", "PP-OCRv5_mobile_rec"),
             use_doc_orientation_classify=False,
             use_doc_unwarping=False,
             use_textline_orientation=False,
         )
     
     def process_input(self, image_path):
+        if self.first_load:
+            self.load() 
+        self.first_load = not self.first_load
+        
+
         """Process an image and extract text from it - no preprocessing"""
         result = self.ocr.predict(image_path)
         extracted_text = ""
