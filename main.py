@@ -10,12 +10,6 @@ from translator import Translator
 # Placeholder classes for engines that are not yet implemented
 
 
-
-
-
-
-
-
 class AITutor:
     """Main AI Tutor class that orchestrates all models."""
     
@@ -23,14 +17,13 @@ class AITutor:
         # Initialize all engines
         self.llm_tutor = LLM('llm','phi-4-mini')
         self.speech_synth_en = SpeechSynthesizer('tts', 'piper-tts-en')
+        self.speech_synth_ur = SpeechSynthesizer('tts', 'mms-tts-urd-script_arabic')
         self.speech_rec= SpeechRecognizer('stt', 'whisper-small')
         self.translator_en = Translator('translation', 'opus-mt-ur-en')
         self.translator_ur = Translator('translation', 'opus-mt-en-ur')
         self.vis_pro = VisionProcessor()
 
- 
 
-    
 
     def interactive_mode(self):
         is_speech = False
@@ -47,19 +40,41 @@ class AITutor:
         while True:
             try:
                 option = input("\nOption: ").strip()
+
+                
+                class AITutor:
+                    def interactive_mode(self):
+                        if option == "1":  # Text input
+                            self.process_text(question)
+                        elif option == "2":  # Image input
+                            self.vis_pro.process_input(path)
+                        elif option == "3":  # Audio input
+                            self.speech_rec.process_input(path)
                     
                 if option == "1":
                     print("Enter your Question")
                     question = input("\nQuestion: ").strip()
 
                     if question:
-                        print("\n" + "-"*50)
-                        print(f"\nTutor: ")
-                        response = self.llm_tutor.process_input(question)
-                        print("-"*50)
+                        if lang == 'en':
+                            print("\n" + "-"*50)
+                            print(f"\nTutor: ")
+                            response = self.llm_tutor.process_input(question)
+                            print("-"*50)
+                            if is_speech:
+                                self.speech_synth_en.process_input(response)
+                        elif lang == 'ur':
+                            t_question_en = self.translator_en.process_input(question)
+                            response = self.llm_tutor.process_input(t_question_en)
+                            # translate response to urdu
+                            self.translator_ur.process_input(response)
+                            if is_speech:
+                                self.speech_synth_ur.process_input(response)
+                        
+                            
 
                 elif option == "2":
-                
+                    
                     path = input("Image Path: ").strip()
                     
                     if path:
@@ -123,3 +138,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
