@@ -1,24 +1,24 @@
 MODEL_REGISTRY = {
     "llm": {
         "phi-4-mini": "models/llm/phi-4-mini/Phi-4-mini.gguf",
-        "gemma-2-2b": "models/llm/gemma-2-2b",
-        "gemma-3-4b": "models/llm/gemma-3-4b"
+        "gemma-2-2b": "models/llm/gemma-2-2b/gemma-2-2b.gguf",
+        "gemma-3-4b": "models/llm/gemma-3-4b/google_gemma-3-4b.gguf"
     },
     "stt": {
         "whisper-small": "models/stt/whisper-small"
     },
     "tts": {
-        "piper-tts-en": "models/tts/piper-tts/en_US-lessac-medium.onnx",
-        "mms-tts-ur": "models/tts/mss-tts-urd-script-arabic"
+        "piper-tts-en": "models/tts/piper-tts-en/en_US-lessac-medium.onnx",
+        "mms-tts-ur": "models/tts/mms-tts-urd-script-arabic"
     },
     "ocr": {
         "PP-OCRv5_mobile_det": "models/ocr/PP-OCRv5_mobile_det_infer",
         "PP-OCRv5_mobile_rec": "models/ocr/PP-OCRv5_mobile_rec_infer",
-        "trocr-handwritten": "models/ocr/trocr-handwritten/trocr-handwritten.gguf"
+        "arabic_PP-OCRv3_mobile_rec": "models/ocr/arabic_PP-OCRv3_mobile_rec"
     },
     "translation": {
-        "opus-en-ur": "models/translation/opus-mt-en-ur/opus-mt-en-ur.pt",
-        "opus-ur-en": "models/translation/opus-mt-ur-en"
+        "opus-mt-en-ur": "models/translation/opus-mt-en-ur",
+        "opus-mt-ur-en": "models/translation/opus-mt-ur-en"
     }
 }
 

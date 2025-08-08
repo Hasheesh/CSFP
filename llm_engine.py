@@ -2,16 +2,15 @@ import os
 import time
 from llama_cpp import Llama
 import torch
-from model_registery import ModelRegistery
 
 class LLM:
-    def __init__(self, model_type, model_name):
+    def __init__(self, model_path):
 
         self.llm = None
-        self.model_type = model_type
-        self.model_name = model_name
-        self.model_reg = ModelRegistery()
+        self.model_path = model_path
         self.first_load = True
+        self.load() 
+
         
     def load(self):
         # Hardware optimization
@@ -19,7 +18,7 @@ class LLM:
         # os.environ["GGML_OPENBLAS"] = "1"
         torch.set_num_threads(16)
 
-        model_path = self.model_reg.get_model_path(self.model_type, self.model_name)
+        model_path = self.model_path
         # Initialize model with proper configuration
         self.llm = Llama(
             model_path=model_path,
@@ -35,10 +34,7 @@ class LLM:
         )
 
     def process_input(self, question: str) -> str:
-        if self.first_load:
-            self.load() 
-        self.first_load = not self.first_load
-        
+
         prompt = (
             "<|system|>You are a patient homework tutor. "
             "Explain concepts clearly for 12-year-olds.<|end|>\n"
@@ -56,6 +52,8 @@ class LLM:
             stream=True,
             stop=["<|end|>"]
         )
+        print(f"\nTutor: ")
+
         for chunk in stream:
             token = chunk["choices"][0]["text"]
             print(token, end="", flush=True)
