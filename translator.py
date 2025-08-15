@@ -59,12 +59,12 @@ class Translator:
         print("[after unload]", proc_mem())
     
 
-print(proc_mem())  # before load
-ten = Translator("models/translation/opus-mt-en-ur")
-ten.process_input("Hello...this is an Ai tutor's voice, Welcome!")
-print(proc_mem())  # stays higher (model kept)
+# print(proc_mem())  # before load
+# ten = Translator("models/translation/opus-mt-en-ur")
+# ten.process_input("Hello...this is an Ai tutor's voice, Welcome!")
+# print(proc_mem())  # stays higher (model kept)
 
-tur = Translator('models/translation/opus-mt-ur-en')
-tur.process_input("یہ اردو متن کو آواز میں تبدیل کرنے کا ایک نمونہ ہے۔")
+# tur = Translator('models/translation/opus-mt-ur-en')
+# tur.process_input("یہ اردو متن کو آواز میں تبدیل کرنے کا ایک نمونہ ہے۔")
 
-print(proc_mem()) 
+# print(proc_mem()) 

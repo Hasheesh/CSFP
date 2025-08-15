@@ -1,15 +1,11 @@
-
-''' took the whisper transcribing usage from whisper example and documentation at https://huggingface.co/openai/whisper-tiny
-    the rest of the code was all written by me '''
 import soundfile as sf
+import numpy as np
 import librosa
-from transformers import WhisperProcessor, WhisperForConditionalGeneration
-from model_registery import ModelRegistery
-# from speech_recognizer import SpeechRecognizer
 import psutil
 import time
 import os
-import gc
+import gc, ctypes
+from faster_whisper import WhisperModel
     # Get virtual memory information
 def proc_mem():
     p = psutil.Process(os.getpid())
@@ -19,75 +15,94 @@ def proc_mem():
 
 class SpeechRecognizer:
 
-    def __init__(self, model_path):
-        self.speech_rec = None 
-        self.active_lang = None  
-        self.processsor = None
+    def __init__(self, model_path,
+                 device: str = "cpu",
+                 compute_type: str = "int8",   # "int8" or "int8_float16" are great on Pi; use "float32" if needed
+                 num_threads: int = 16,
+                 beam_size: int = 1,
+                 vad_filter: bool = True):
         self.model_path = model_path
-        self.first_load = True    
+        self.device = device
+        self.compute_type = compute_type
+        self.num_threads = num_threads
+        self.beam_size = beam_size
+        self.vad_filter = vad_filter
+
+        self.model = None
+        self.first_load = True
         self.active_lang = None
-        
+
     def load(self):
-        self.processor = WhisperProcessor.from_pretrained(self.model_path)
-        self.speech_rec     = WhisperForConditionalGeneration.from_pretrained(self.model_path)
-        print(f"Successfully loaded {self.model_path}")
+        # Loads a CTranslate2 Whisper model from local folder or HF id
+        # If you have the ct2-converted "small" model locally, point model_path to that directory.
+        self.model = WhisperModel(
+            self.model_path,
+            device=self.device,
+            compute_type=self.compute_type,
+            cpu_threads=self.num_threads
+        )
+        print(f"[faster-whisper] Successfully loaded {self.model_path} ({self.device}, {self.compute_type})")
+        print("[after load]", proc_mem())
+
+    
 
 
-    def process_input(self, audio_path, lang):
-        # Read audio, resampling if needed
+    def process_input(self, audio_path: str, lang: str):
         if self.first_load:
-            self.load() 
-            self.first_load = not self.first_load
+            self.load()
+            self.first_load = False
 
-        self.active_lang = lang 
+        self.active_lang = lang
 
-        audio, sr = sf.read(audio_path)
+        # Prepare audio
 
-        if sr != self.processor.feature_extractor.sampling_rate:
-            audio = librosa.resample(audio, orig_sr=sr, 
-                                    target_sr=self.processor.feature_extractor.sampling_rate)
-
-            sr = self.processor.feature_extractor.sampling_rate
-
-        input = self.processor.feature_extractor(audio, sampling_rate=sr, 
-                                            return_tensors="pt")
-        input_features = input.input_features.to(self.speech_rec.device) 
-
-        
-        generated_ids = self.speech_rec.generate(
-            input_features, 
-            max_length=2000,
-            num_beams=5,
-            task="transcribe",
+        # Transcribe
+        # task="transcribe" keeps original language; use task="translate" to force English.
+        # language can be "ur", "en", etc. If None, it will auto-detect.
+        segments, info = self.model.transcribe(
+            audio_path,
             language=lang,
-            early_stopping=True
+            task="transcribe",
+            beam_size=self.beam_size,
+            vad_filter=self.vad_filter
         )
 
-        # 5. Decode to text
-        transcription = self.processor.decode(generated_ids[0], skip_special_tokens=True)
+        text_chunks = [seg.text.strip() for seg in segments]
+        transcription = " ".join(t for t in text_chunks if t)
         print(transcription)
         return transcription
 
     def unload(self):
-        if self.active_lang is None and not (self.speech_rec or self.processor):
+        if self.model is None:
             return
-
-        print(f"[unload] {self.active_lang} ...")
-
-        del self.speech_rec
-        self.speech_rec = None
-        del self.processor
-        self.processor = None
-
-        # run GC; give OS a tick to reclaim
+        print(f"[faster-whisper unload] {self.active_lang} ...")
+        del self.model
+        self.model = None
         gc.collect()
         time.sleep(0.1)
-
         print("[after unload]", proc_mem())
+        try:
+            ctypes.CDLL("libc.so.6").malloc_trim(0)
+        except Exception:
+            pass
 
-# print(proc_mem()) 
-# synth2 = SpeechRecognizer('models/stt/whisper-small')
-# synth2.process_input('output1.wav', 'ur')
-# print(proc_mem())  # stays higher (model kept)
-# synth2.unload()
-# print(proc_mem()) 
+if __name__ == "__main__":
+    print(proc_mem())
+    rec = SpeechRecognizer(
+        model_path="models/stt/faster-whisper-small",  # your local ct2 model dir
+        device="cpu",
+        compute_type="int8",     # try "int8_float16" or "float32" if you hit issues
+        num_threads=16,
+        beam_size=1,
+        vad_filter=True
+    )
+    out = rec.process_input("techno.wav", "ur")
+    print("TRANSCRIPT:", out)
+    print(proc_mem())  # model kept
+    # rec.unload()
+    print(proc_mem())
+    out = rec.process_input("question.wav", "en")
+    print("TRANSCRIPT:", out)
+    print(proc_mem())  # model kept
+    rec.unload()
+    print(proc_mem())

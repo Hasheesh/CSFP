@@ -1,20 +1,54 @@
+''' Instructions for regex were taken from https://labex.io/tutorials/python-how-to-apply-lambda-in-regex-substitution-420893
+'''
 import numpy as np
 import sounddevice as sd
 from piper import PiperVoice
 from transformers import VitsModel, AutoTokenizer
 import torch
 import gc
-import scipy.io.wavfile
 from model_registery import ModelRegistery
-# from speech_recognizer import SpeechRecognizer
 import psutil
 import time
 import os
+import re
+
     # Get virtual memory information
 def proc_mem():
     p = psutil.Process(os.getpid())
     rss_mb = p.memory_info().rss / (1024**2)
     return f"Process RSS: {rss_mb:.1f} MiB"
+
+def clean_text_en(text):
+    CHARS = re.compile(r"(\*\*|__|\*|_)(.*?)")
+    BULLETS = re.compile(r"^\s*([-*+•]|\.)\s+", re.MULTILINE)
+    SYMBOLS_MAP = {
+    "&": " and ",
+    "%": " percent ",
+    "+": " plus ",
+    "€": " euros ",
+    "$": " dollars ",
+    "£": " pounds ",
+    "@": " at ",
+    "#": " number ",
+    "°C": " degrees Celsius ",
+    "°F": " degrees Fahrenheit ",
+    }
+    
+
+
+    text =CHARS.sub("", text)
+    text = BULLETS.sub("", text)
+    text = text.replace("*", "").replace("_", "")
+
+    for s, w in SYMBOLS_MAP.items():
+        text = text.replace(s, w)
+
+    text = re.sub(r"\s+", " ", text)                # collapse spaces/newlines
+    text = re.sub(r"[!?]{2,}", lambda m: m.group(0)[0], text)  # !!?? -> ! or ?
+    text = re.sub(r"\.{3,}", " … ", text)           # change 3 dots to elipsis 
+    return text.strip()
+
+
 
 class SpeechSynthesizer:
 
@@ -55,7 +89,9 @@ class SpeechSynthesizer:
         if lang == 'en':
         # Stream audio directly to speakers
             print(self.voice.config.sample_rate)
-            for chunk in self.voice.synthesize(text):
+            c_text = clean_text_en(text)
+            print("CLEANED TEXT: \n" + c_text + "\n")
+            for chunk in self.voice.synthesize(c_text):
                 int_data = np.frombuffer(chunk.audio_int16_bytes, dtype=np.int16)
                 # stream.write(int_data)
                 sd.play(int_data, samplerate=self.voice.config.sample_rate)
@@ -109,13 +145,13 @@ class SpeechSynthesizer:
     
 
 # print(proc_mem())  # before load
-# synth = SpeechSynthesizer("models/tts/piper-tts-en/en_US-lessac-medium.onnx")
+# synth = SpeechSynthesizer("models/tts/piper-tts-en/en_US-amy-medium.onnx")
 # synth.process_input("Hello...this is an Ai tutor's voice, Welcome!", "en")
 # print(proc_mem())  # stays higher (model kept)
 # synth.unload()
 # print(proc_mem()) 
 
-# synth1 = SpeechSynthesizer('models/tts/piper-tts-en/en_US-lessac-medium.onnx')
+# synth1 = SpeechSynthesizer('models/tts/piper-tts-en/en_US-amy-medium.onnx')
 # synth1.process_input("Hello this is an AI tutor. Welcome!", 'en')
 # print(proc_mem())  # stays higher (model kept)
 # synth1.unload()

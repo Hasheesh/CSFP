@@ -2,19 +2,24 @@ MODEL_REGISTRY = {
     "llm": {
         "phi-4-mini": "models/llm/phi-4-mini/Phi-4-mini.gguf",
         "gemma-2-2b": "models/llm/gemma-2-2b/gemma-2-2b.gguf",
-        "gemma-3-4b": "models/llm/gemma-3-4b/google_gemma-3-4b.gguf"
+        "gemma-3-4b": "models/llm/gemma-3-4b/google_gemma-3-4b.gguf",
+        "gemma-3n-4b": "models/llm/gemma-3n-4b/google_gemma-3n-E4B-it-Q4_K_M.gguf",
+        "qwen-2.5-1.5b-math": "models/llm/qwen-2.5-1.5b-math-it/Qwen2.5-Math-1.5B-Instruct-Q4_K_M.gguf"
     },
     "stt": {
-        "whisper-small": "models/stt/whisper-small"
+        "whisper-small": "models/stt/whisper-small",
+        "faster-whisper-small": "models/stt/faster-whisper-small"
     },
     "tts": {
-        "piper-tts-en": "models/tts/piper-tts-en/en_US-lessac-medium.onnx",
+        "piper-tts-en-lessac": "models/tts/piper-tts-en-lessac/en_US-lessac-medium.onnx",
+        "piper-tts-en-amy": "models/tts/piper-tts-en-amy/en_US-amy-medium.onnx",
         "mms-tts-ur": "models/tts/mms-tts-urd-script-arabic"
     },
     "ocr": {
         "PP-OCRv5_mobile_det": "models/ocr/PP-OCRv5_mobile_det_infer",
         "PP-OCRv5_mobile_rec": "models/ocr/PP-OCRv5_mobile_rec_infer",
-        "arabic_PP-OCRv3_mobile_rec": "models/ocr/arabic_PP-OCRv3_mobile_rec"
+        "PP-OCRv3_mobile_det": "models/ocr/PP-OCRv3_mobile_det_infer",
+        "arabic_PP-OCRv3_mobile_rec": "models/ocr/arabic_PP-OCRv3_mobile_rec_infer"
     },
     "translation": {
         "opus-mt-en-ur": "models/translation/opus-mt-en-ur",

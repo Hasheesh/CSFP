@@ -1,9 +1,3 @@
-from gettext import translation
-import os
-import time
-
-from transformers.models import FalconForSequenceClassification
-
 # Import all engines
 from llm_engine import LLM
 from vision_processor import VisionProcessor
@@ -11,16 +5,31 @@ from speech_synthesizer import SpeechSynthesizer
 from speech_recognizer import SpeechRecognizer
 from translator import Translator
 from model_registery import ModelRegistery
-# Placeholder classes for engines that are not yet implemented
 import psutil
 import time
 import os
 import gc
-    # Get virtual memory information
+import re
+from bidi.algorithm import get_display
+import urduhack
+
+    # Get memory information
 def proc_mem():
     p = psutil.Process(os.getpid())
     rss_mb = p.memory_info().rss / (1024**2)
     return f"Process RSS: {rss_mb:.1f} MiB"
+
+
+def fix_urdu_script(text):
+    n_text = urduhack.normalization.normalize(text)
+    n_text = get_display(n_text) # fix RTL
+    return n_text
+
+def fix_english_text(text):
+    n_text = re.sub('[@#$:*]', '', text)
+    n_text = re.sub('&', 'and', n_text)
+    n_text = re.sub('%', 'precent', n_text)
+    return n_text.strip
 
 
 
@@ -31,19 +40,22 @@ class AITutor:
         # Initialize all engines
         model_reg = ModelRegistery()
         # llm_path = model_reg.get_model_path('llm', 'phi-4-mini')
-        llm_path = model_reg.get_model_path('llm', 'gemma-3-4b')
+        llm_path = model_reg.get_model_path('llm', 'gemma-2-2b')
 
         self.llm_tutor = LLM(llm_path)
-        tts_en_path = model_reg.get_model_path('tts', 'piper-tts-en')
+        tts_en_path = model_reg.get_model_path('tts', 'piper-tts-en-amy')
         self.speech_synth_en = SpeechSynthesizer(tts_en_path)
         tts_ur_path = model_reg.get_model_path('tts', 'mms-tts-ur')
         self.speech_synth_ur = SpeechSynthesizer(tts_ur_path)
-        stt_path = model_reg.get_model_path('stt', 'whisper-small')
+        
+        stt_path = model_reg.get_model_path('stt', 'faster-whisper-small')
         self.speech_rec= SpeechRecognizer(stt_path)
+        
         translation_ur_en_path = model_reg.get_model_path('translation', 'opus-mt-ur-en')
         self.translator_en = Translator(translation_ur_en_path)
         translation_en_ur_path = model_reg.get_model_path('translation', 'opus-mt-en-ur')
         self.translator_ur = Translator(translation_en_ur_path)
+
         ocr_en_det_path = model_reg.get_model_path('ocr', 'PP-OCRv5_mobile_det')
         ocr_en_rec_path = model_reg.get_model_path('ocr', 'PP-OCRv5_mobile_rec')
         ocr_en_det_model_name = 'PP-OCRv5_mobile_det'
@@ -56,7 +68,7 @@ class AITutor:
 
 
     def interactive_mode(self):
-        is_speech = FalconForSequenceClassification
+        is_speech = True
         lang = "en"
 
         print("=== AI Tutor ===")
@@ -80,6 +92,8 @@ class AITutor:
                         if lang == 'en':
                             print("\n" + "-"*50)
                             response = self.llm_tutor.process_input(question)
+                            print(response)
+
                             print("-"*50)
                             if is_speech:
                                 print("Waiting for answer before speech...")
@@ -103,12 +117,20 @@ class AITutor:
                     if path:
                         if lang == 'en':
                             extracted_text = self.vis_pro_en.process_input(path, lang)
-                            # response = self.llm_tutor.process_input(extracted_text) 
+                            print(extracted_text)
+                            response = self.llm_tutor.process_input("Text extracted from image input:  " + extracted_text) 
                             print("-"*50)
+                            if is_speech:
+                                print("Waiting for answer before speech...")
+                                print(response)
+                                print("-"*50)
+                                self.speech_synth_en.process_input(response, lang)
 
                         elif lang == 'ur':
                             extracted_text = self.vis_pro_ur.process_input(path, lang)
-                            # response = self.llm_tutor.process_input(extracted_text) 
+                            n_text = fix_urdu_script(extracted_text)
+                            print(n_text)
+                            # response = self.llm_tutor.process_input("Text extracted from image input:  " + n_text) 
                             print("-"*50)
 
                 elif option == "3":
@@ -116,9 +138,16 @@ class AITutor:
                     path = input("Audio Path: ").strip()
                     
                     if path:
-                        print("\n" + "-"*50)
-                        transcription = self.speech_rec.process_input(path, lang)
-                        print(f"Transcription: {transcription}")
+                        if lang == 'en':
+                            transcription = self.speech_rec.process_input(path, lang)
+                            print(f"Transcription: {transcription}")
+                            response = self.llm_tutor.process_input("Text extracted from audio input:  " + transcription) 
+                            print("-"*50)
+
+                        # elif lang == 'ur':
+                        #     print("\n" + "-"*50)
+                        # transcription = self.speech_rec.process_input(path, lang)
+                        # print(f"Transcription: {transcription}")
                         # # Process transcription with LLM
                         # response = self.llm_tutor.process_input(transcription)
                         # print(f"LLM Response: {response}")
