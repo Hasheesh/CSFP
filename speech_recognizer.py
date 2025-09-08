@@ -33,8 +33,7 @@ class SpeechRecognizer:
         self.active_lang = None
 
     def load(self):
-        # Loads a CTranslate2 Whisper model from local folder or HF id
-        # If you have the ct2-converted "small" model locally, point model_path to that directory.
+
         self.model = WhisperModel(
             self.model_path,
             device=self.device,
@@ -86,23 +85,23 @@ class SpeechRecognizer:
         except Exception:
             pass
 
-if __name__ == "__main__":
-    print(proc_mem())
-    rec = SpeechRecognizer(
-        model_path="models/stt/faster-whisper-small",  # your local ct2 model dir
-        device="cpu",
-        compute_type="int8",     # try "int8_float16" or "float32" if you hit issues
-        num_threads=16,
-        beam_size=1,
-        vad_filter=True
-    )
-    out = rec.process_input("techno.wav", "ur")
-    print("TRANSCRIPT:", out)
-    print(proc_mem())  # model kept
-    # rec.unload()
-    print(proc_mem())
-    out = rec.process_input("question.wav", "en")
-    print("TRANSCRIPT:", out)
-    print(proc_mem())  # model kept
-    rec.unload()
-    print(proc_mem())
+# if __name__ == "__main__":
+#     print(proc_mem())
+#     rec = SpeechRecognizer(
+#         model_path="models/stt/faster-whisper-small",  # your local ct2 model dir
+#         device="cpu",
+#         compute_type="int8",     # try "int8_float16" or "float32" if you hit issues
+#         num_threads=16,
+#         beam_size=5,
+#         vad_filter=True
+#     )
+#     out = rec.process_input("techno.wav", "ur")
+#     print("TRANSCRIPT:", out)
+#     print(proc_mem())  # model kept
+#     # rec.unload()
+#     print(proc_mem())
+#     out = rec.process_input("question.wav", "en")
+#     print("TRANSCRIPT:", out)
+#     print(proc_mem())  # model kept
+#     rec.unload()
+#     print(proc_mem())

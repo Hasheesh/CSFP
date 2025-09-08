@@ -1,9 +1,14 @@
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 import psutil
+import ctranslate2
+import transformers
 import time
 import gc
 import os
-    # Get virtual memory information
+import urduhack
+from bidi.algorithm import get_display
+
+# Get virtual memory information
 def proc_mem():
     p = psutil.Process(os.getpid())
     rss_mb = p.memory_info().rss / (1024**2)
@@ -21,23 +26,20 @@ class Translator:
         
         # Load model and tokenizer from local directory
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_path)
-        self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_path)
+        self.translator = ctranslate2.Translator(self.model_path, device="cpu")
 
-        # Create translation pipeline
-        self.translator = pipeline(
-            "translation", 
-            model=self.model, 
-            tokenizer=self.tokenizer
-        )
-
-    def process_input(self, text):
+    # code for translation taken from ctranslate2 documentation at https://opennmt.net/CTranslate2/guides/transformers.html#nllb
+    def process_input(self, text, lang):
         if self.first_load:
             self.load() 
             self.first_load = not self.first_load
 
-        result = self.translator(text)
-        print(result[0]['translation_text'])
-        return result[0]['translation_text']
+        source_tokens = self.tokenizer.convert_ids_to_tokens(self.tokenizer.encode(text))
+        if lang == 'en': target_prefix = ["urd_Arab"] 
+        elif lang == 'ur': target_prefix = ["eng_Latn"]
+        results = self.translator.translate_batch([source_tokens], target_prefix=[target_prefix])
+        target = results[0].hypotheses[0][1:]
+        return self.tokenizer.decode(self.tokenizer.convert_tokens_to_ids(target))
 
     def unload(self):
         if not self.first_load and not (self.tokenizer or self.translator):
@@ -59,12 +61,24 @@ class Translator:
         print("[after unload]", proc_mem())
     
 
-# print(proc_mem())  # before load
-# ten = Translator("models/translation/opus-mt-en-ur")
-# ten.process_input("Hello...this is an Ai tutor's voice, Welcome!")
+# tr = Translator("models/translation/nllb-200-distilled-600M-Q8")
+# # ten.process_input("Hello...this is an Ai tutor's voice, Welcome!")
+
+# def fix_urdu_script(text):
+#     n_text = urduhack.normalization.normalize(text)
+#     n_text = get_display(n_text) # fix RTL
+#     return n_text
+
+
+# with open("trans.txt", "w") as f:
+#     f.write(tr.process_input("How do plants make their own food?", "en"))
+#     # f.write(tr.process_input("What is the difference between a solids, liquids and gases?", 'en'))
+#     f.close()
+
+
 # print(proc_mem())  # stays higher (model kept)
 
-# tur = Translator('models/translation/opus-mt-ur-en')
-# tur.process_input("یہ اردو متن کو آواز میں تبدیل کرنے کا ایک نمونہ ہے۔")
+# tr = Translator('models/translation/nllb-200-distilled-600M-Q8')
+# print(tr.process_input("پودے اپنا کھانا کیسے تیار کرتے ہیں ؟", 'ur'))
 
 # print(proc_mem()) 

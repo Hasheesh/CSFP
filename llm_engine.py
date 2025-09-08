@@ -15,7 +15,9 @@ class LLM:
         self.model_path = model_path
         self.first_load = True
         self.system_prompt = (
-            "You are a patient tutor assistant. Explain concepts clearly for 12-year-olds. ask back questions as well, be a stohastic tutor."
+            "You are a patient tutor assistant. Explain concepts clearly for 12-year-olds. "
+            "Use simple, direct sentences. Avoid complex metaphors, idioms, and emojis. "
+            "Ask back questions as well, be a stohastic tutor. "
         )
         self.chat_history = []
         self.load() 
@@ -70,7 +72,7 @@ class LLM:
             messages=messages,
             temperature=0.6,
             top_p=0.9,
-            max_tokens=256,
+            # max_tokens=256
             stream=True,
         )
        

@@ -11,6 +11,8 @@ import psutil
 import time
 import os
 import re
+from scipy.io import wavfile
+
 
     # Get virtual memory information
 def proc_mem():
@@ -91,13 +93,18 @@ class SpeechSynthesizer:
             print(self.voice.config.sample_rate)
             c_text = clean_text_en(text)
             print("CLEANED TEXT: \n" + c_text + "\n")
-            for chunk in self.voice.synthesize(c_text):
-                int_data = np.frombuffer(chunk.audio_int16_bytes, dtype=np.int16)
-                # stream.write(int_data)
-                sd.play(int_data, samplerate=self.voice.config.sample_rate)
-                print(self.voice.config.sample_rate)
 
-                sd.wait()
+            # Create an output stream and generates audio chunks
+            with sd.OutputStream(
+                samplerate=self.voice.config.sample_rate,
+                channels=1,
+                dtype='int16'
+            ) as stream:
+                for chunk in self.voice.synthesize(c_text):
+                    # Convert the audio bytes to a numpy array
+                    int_data = np.frombuffer(chunk.audio_int16_bytes, dtype=np.int16)
+                    # Write the audio chunks to the buffer
+                    stream.write(int_data)
         
         elif lang == 'ur':
             
@@ -112,7 +119,7 @@ class SpeechSynthesizer:
 
             data_np = output.numpy()
             data_np_squeezed = np.squeeze(data_np)
-            # scipy.io.wavfile.write("output.wav", rate=self.model.config.sampling_rate, data=data_np_squeezed)
+            wavfile.write("outputs.wav", rate=self.voice.config.sampling_rate, data=data_np_squeezed)
             sd.play(data_np_squeezed, samplerate=self.voice.config.sampling_rate)
             sd.wait()
 

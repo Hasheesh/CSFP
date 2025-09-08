@@ -13,7 +13,8 @@ import re
 from bidi.algorithm import get_display
 import urduhack
 
-    # Get memory information
+
+# Get memory information
 def proc_mem():
     p = psutil.Process(os.getpid())
     rss_mb = p.memory_info().rss / (1024**2)
@@ -25,11 +26,33 @@ def fix_urdu_script(text):
     n_text = get_display(n_text) # fix RTL
     return n_text
 
-def fix_english_text(text):
-    n_text = re.sub('[@#$:*]', '', text)
-    n_text = re.sub('&', 'and', n_text)
-    n_text = re.sub('%', 'precent', n_text)
-    return n_text.strip
+def clean_text_en(text):
+    BULLETS = re.compile(r"^\s*([-*+•]|\.)\s+", re.MULTILINE)
+    SYMBOLS_MAP = {
+    "&": " and ",
+    "%": " percent ",
+    "+": " plus ",
+    "€": " euros ",
+    "$": " dollars ",
+    "£": " pounds ",
+    "@": " at ",
+    "#": " number ",
+    "°C": " degrees Celsius ",
+    "°F": " degrees Fahrenheit ",
+    }
+    
+
+
+    text = BULLETS.sub("", text)
+    text = text.replace("**", "").replace("__", "").replace("*", "").replace("_", "")
+
+    for s, w in SYMBOLS_MAP.items():
+        text = text.replace(s, w)
+
+    text = re.sub(r"\s+", " ", text)                # collapse spaces/newlines
+    text = re.sub(r"[!?]{2,}", lambda m: m.group(0)[0], text)  # !!?? -> ! or ?
+    text = re.sub(r"\.{3,}", " … ", text)           # change 3 dots to elipsis 
+    return text.strip()
 
 
 
@@ -41,6 +64,16 @@ class AITutor:
         model_reg = ModelRegistery()
         # llm_path = model_reg.get_model_path('llm', 'phi-4-mini')
         llm_path = model_reg.get_model_path('llm', 'gemma-2-2b')
+        # llm_path = model_reg.get_model_path('llm', 'qwen-3-4b-q5')
+        # llm_path = model_reg.get_model_path('llm', 'gemma-3-4b')
+        # llm_path = model_reg.get_model_path('llm', 'gemma-3n-4b-q4')
+        # llm_path = model_reg.get_model_path('llm', 'phi-3.1-mini')
+        # llm_path = model_reg.get_model_path('llm', 'phi-3-mini')
+        # llm_path = model_reg.get_model_path('llm', 'qwen-2.5-3b-q4')
+        # llm_path = model_reg.get_model_path('llm', 'qwen-3-4b-q5')
+
+
+
 
         self.llm_tutor = LLM(llm_path)
         tts_en_path = model_reg.get_model_path('tts', 'piper-tts-en-amy')
@@ -51,10 +84,8 @@ class AITutor:
         stt_path = model_reg.get_model_path('stt', 'faster-whisper-small')
         self.speech_rec= SpeechRecognizer(stt_path)
         
-        translation_ur_en_path = model_reg.get_model_path('translation', 'opus-mt-ur-en')
-        self.translator_en = Translator(translation_ur_en_path)
-        translation_en_ur_path = model_reg.get_model_path('translation', 'opus-mt-en-ur')
-        self.translator_ur = Translator(translation_en_ur_path)
+        translator_path = model_reg.get_model_path('translation', 'nllb-200-600M-Q8')
+        self.translator = Translator(translator_path)
 
         ocr_en_det_path = model_reg.get_model_path('ocr', 'PP-OCRv5_mobile_det')
         ocr_en_rec_path = model_reg.get_model_path('ocr', 'PP-OCRv5_mobile_rec')
@@ -69,7 +100,9 @@ class AITutor:
 
     def interactive_mode(self):
         is_speech = True
-        lang = "en"
+        # lang = "en"
+        lang = "ur"
+
 
         print("=== AI Tutor ===")
         print("  1. for text input")
@@ -102,11 +135,38 @@ class AITutor:
                                 self.speech_synth_en.process_input(response, lang)
 
                         elif lang == 'ur':
-                            # t_question_en = self.translator_en.process_input(question)
-                            response = self.llm_tutor.process_input(question)
+                            # question = fix_urdu_script(question)
+                            t_question_en = self.translator.process_input("پودے اپنا کھانا کیسے تیار کرتے ہیں ؟", lang)
+                            print(t_question_en)
+                            response = self.llm_tutor.process_input(t_question_en)
                             # translate response to urdu
-                            t_response = self.translator_ur.process_input(response)
-                            print(t_response)
+                            cleaned_response = clean_text_en(response)
+                            # --- START OF FIX ---
+                            print("\nTranslating response to Urdu paragraph by paragraph...")
+                            
+                            # Split the long response into paragraphs
+                            paragraphs = response.split('\n\n')
+                            
+                            translated_paragraphs = []
+                            for paragraph in paragraphs:
+                                if paragraph.strip(): # Ensure the paragraph is not empty
+                                    # Translate each paragraph individually
+                                    translated_chunk = self.translator.process_input(paragraph, 'en')
+                                    translated_paragraphs.append(translated_chunk)
+                            
+                            # Join the translated paragraphs back together
+                            t_response = "\n\n".join(translated_paragraphs)
+                            
+                            # print("\n" + t_response)
+
+                            with open("trans.txt", "w", encoding="utf-8") as f:
+                                f.write(t_response)
+                            # t_response = self.translator.process_input(response, 'en')
+                            # print(cleaned_response)
+                            # with open("trans.txt", "w") as f:
+                            #     f.write(t_response)
+                            #     f.close()
+                            print("translated")
                             if is_speech:
                                 self.speech_synth_ur.process_input(t_response, lang)
 
@@ -129,6 +189,8 @@ class AITutor:
                         elif lang == 'ur':
                             extracted_text = self.vis_pro_ur.process_input(path, lang)
                             n_text = fix_urdu_script(extracted_text)
+                            with open('urdu.txt', 'w') as f:
+                                f.write(n_text + " \n")
                             print(n_text)
                             # response = self.llm_tutor.process_input("Text extracted from image input:  " + n_text) 
                             print("-"*50)
@@ -144,14 +206,18 @@ class AITutor:
                             response = self.llm_tutor.process_input("Text extracted from audio input:  " + transcription) 
                             print("-"*50)
 
-                        # elif lang == 'ur':
-                        #     print("\n" + "-"*50)
-                        # transcription = self.speech_rec.process_input(path, lang)
-                        # print(f"Transcription: {transcription}")
-                        # # Process transcription with LLM
-                        # response = self.llm_tutor.process_input(transcription)
-                        # print(f"LLM Response: {response}")
-                         
+                        elif lang == 'ur':
+                            print("\n" + "-"*50)
+                            transcription = self.speech_rec.process_input(path, lang)
+                            print(f"Transcription: {transcription}")
+                            transcription = urduhack.normalization.normalize(transcription)
+                            # Process transcription with LLM
+                            # response = self.llm_tutor.process_input(transcription)
+                            # print(f"LLM Response: {response}")
+                            with open ('urdu.txt', 'w') as f:
+                                f.write(transcription)
+
+
                 elif option == "4":
                     print("Please select your language: ")
                     lang = input("ur/en ? ")
