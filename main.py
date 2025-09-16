@@ -1,5 +1,5 @@
 # Import all engines
-from llm_engine import LLM
+from llm_engine import LLMEngine
 from vision_processor import VisionProcessor
 from speech_synthesizer import SpeechSynthesizer
 from speech_recognizer import SpeechRecognizer
@@ -12,7 +12,6 @@ import gc
 import re
 from bidi.algorithm import get_display
 import urduhack
-
 
 # Get memory information
 def proc_mem():
@@ -63,7 +62,7 @@ class AITutor:
         # Initialize all engines
         model_reg = ModelRegistery()
         # llm_path = model_reg.get_model_path('llm', 'phi-4-mini')
-        llm_path = model_reg.get_model_path('llm', 'gemma-2-2b')
+        # llm_path = model_reg.get_model_path('llm', 'gemma-2-2b')
         # llm_path = model_reg.get_model_path('llm', 'qwen-3-4b-q5')
         # llm_path = model_reg.get_model_path('llm', 'gemma-3-4b')
         # llm_path = model_reg.get_model_path('llm', 'gemma-3n-4b-q4')
@@ -71,11 +70,12 @@ class AITutor:
         # llm_path = model_reg.get_model_path('llm', 'phi-3-mini')
         # llm_path = model_reg.get_model_path('llm', 'qwen-2.5-3b-q4')
         # llm_path = model_reg.get_model_path('llm', 'qwen-3-4b-q5')
+        llm_path = model_reg.get_model_path('llm', 'llama-3.2-3b-q4')
 
 
 
 
-        self.llm_tutor = LLM(llm_path)
+        self.llm_tutor = LLMEngine(llm_path)
         tts_en_path = model_reg.get_model_path('tts', 'piper-tts-en-amy')
         self.speech_synth_en = SpeechSynthesizer(tts_en_path)
         tts_ur_path = model_reg.get_model_path('tts', 'mms-tts-ur')
@@ -110,6 +110,8 @@ class AITutor:
         print("  3. for speech input")
         print("  4. to select your language")
         print("  5. to toggle speech output")
+        print("  6. Load all chats")
+        print("  7. Delete all chats")
         print("  Enter quit to Exit")
         
         while True:
@@ -126,7 +128,7 @@ class AITutor:
                             print("\n" + "-"*50)
                             response = self.llm_tutor.process_input(question)
                             print(response)
-
+                            self.chat_db.save_chat(question, response, 'en')
                             print("-"*50)
                             if is_speech:
                                 print("Waiting for answer before speech...")
@@ -225,9 +227,7 @@ class AITutor:
                     
 
                 elif option == "5":
-                   
                     is_speech = not is_speech
-
                     if is_speech:
                         print("Speech output enabled")
                     else:
@@ -236,6 +236,24 @@ class AITutor:
                     print("-"*50)
                     print(proc_mem())
 
+                elif option == "6":
+                    chats = self.chat_db.load_all_chats()
+                    if not chats:
+                        print("No chat sessions found.")
+                    else:
+                        for chat in chats:
+                            print(f"\n[{chat['timestamp']}] ({chat['language']})")
+                            print(f"User: {chat['user_input']}")
+                            print(f"AI: {chat['ai_response']}")
+                            print("-" * 50)
+
+                elif option == "7":
+                    confirm = input("Are you sure you want to delete ALL chats? (y/N): ").strip().lower()
+                    if confirm == 'y':
+                        self.chat_db.delete_all_chats()
+                        print("All chats deleted. Started new empty session.")
+                    else:
+                        print("Deletion cancelled.")
 
 
                 elif option.lower() == 'quit':
@@ -284,3 +302,4 @@ if __name__ == "__main__":
 
 
      
+

@@ -40,3 +40,5 @@ __pycache__/llm_engine.cpython-312.pyc
 __pycache__/speech_synthesizer.cpython-312.pyc
 __pycache__/translator.cpython-312.pyc
 __pycache__/vision_processor.cpython-312.pyc
+chat_sessions.sqlite3
+.gradio/certificate.pem

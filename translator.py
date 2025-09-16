@@ -1,18 +1,20 @@
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 import psutil
 import ctranslate2
-import transformers
 import time
 import gc
 import os
 import urduhack
 from bidi.algorithm import get_display
+import re
 
 # Get virtual memory information
 def proc_mem():
     p = psutil.Process(os.getpid())
     rss_mb = p.memory_info().rss / (1024**2)
     return f"Process RSS: {rss_mb:.1f} MiB"
+
+
 
 class Translator:
 
@@ -59,6 +61,34 @@ class Translator:
         time.sleep(0.1)
 
         print("[after unload]", proc_mem())
+
+    def convert_to_urdu_num(self, text: str) -> str:
+        """Convert english numbers (0-9) to urdu numbers (۰-۹) for display."""
+        if not text:
+            return text
+            
+        # Mapping of english numbers to urdu numbers
+        num_map = {
+            '0': '۰', '1': '۱', '2': '۲', '3': '۳', '4': '۴',
+            '5': '۵', '6': '۶', '7': '۷', '8': '۸', '9': '۹'
+        }
+        
+        # Replace each english number with its urdu equivalent
+        for english, urdu in num_map.items():
+            text = text.replace(english, urdu)
+        
+        return text
+
+    def fix_urdu_text_display(self, text: str) -> str:
+        """Fix Urdu text for proper RTL display."""
+        if not text:
+            return text
+            
+        # Normalize Urdu text
+        normalized_text = urduhack.normalization.normalize(text)
+        # Fix RTL display
+        display_text = get_display(normalized_text)
+        return display_text
     
 
 # tr = Translator("models/translation/nllb-200-distilled-600M-Q8")

@@ -53,11 +53,10 @@ class SpeechRecognizer:
 
         self.active_lang = lang
 
-        # Prepare audio
 
         # Transcribe
-        # task="transcribe" keeps original language; use task="translate" to force English.
-        # language can be "ur", "en", etc. If None, it will auto-detect.
+        # task="transcribe" keeps original language
+        # language can be "ur", "en", etc.
         segments, info = self.model.transcribe(
             audio_path,
             language=lang,

@@ -12,6 +12,7 @@ import time
 import os
 import re
 from scipy.io import wavfile
+from num2words import num2words
 
 
     # Get virtual memory information
@@ -19,37 +20,6 @@ def proc_mem():
     p = psutil.Process(os.getpid())
     rss_mb = p.memory_info().rss / (1024**2)
     return f"Process RSS: {rss_mb:.1f} MiB"
-
-def clean_text_en(text):
-    CHARS = re.compile(r"(\*\*|__|\*|_)(.*?)")
-    BULLETS = re.compile(r"^\s*([-*+•]|\.)\s+", re.MULTILINE)
-    SYMBOLS_MAP = {
-    "&": " and ",
-    "%": " percent ",
-    "+": " plus ",
-    "€": " euros ",
-    "$": " dollars ",
-    "£": " pounds ",
-    "@": " at ",
-    "#": " number ",
-    "°C": " degrees Celsius ",
-    "°F": " degrees Fahrenheit ",
-    }
-    
-
-
-    text =CHARS.sub("", text)
-    text = BULLETS.sub("", text)
-    text = text.replace("*", "").replace("_", "")
-
-    for s, w in SYMBOLS_MAP.items():
-        text = text.replace(s, w)
-
-    text = re.sub(r"\s+", " ", text)                # collapse spaces/newlines
-    text = re.sub(r"[!?]{2,}", lambda m: m.group(0)[0], text)  # !!?? -> ! or ?
-    text = re.sub(r"\.{3,}", " … ", text)           # change 3 dots to elipsis 
-    return text.strip()
-
 
 
 class SpeechSynthesizer:
@@ -61,6 +31,37 @@ class SpeechSynthesizer:
         self.model_path = model_path
         self.first_load = True
         self.active_lang = None
+        
+        # Text processing patterns and mappings for TTS
+        self.MD_MARKERS = re.compile(r"(\*\*|__|\*|_)")
+        self.BULLETS = re.compile(r"(?m)^\s*[*\-+•●▪︎◦·]\s+")
+        self.EMOJI_PATTERN = re.compile("["
+                                       "\U0001F300-\U0001FAFF"
+                                       "\U00002700-\U000027BF"
+                                       "\U00002600-\U000026FF"
+                                       "\U0001F1E6-\U0001F1FF"
+                                       "]+", re.UNICODE)
+        self.NUM_PATTERN = re.compile(r"\b\d{1,9}(?:\.\d+)?\b")
+        
+        # Symbol mappings for English TTS
+        self.SYMBOLS_MAP = {
+            "&": " and ",
+            "%": " percent ",
+            "+": " plus ",
+            "-": " minus ",
+            "x": " times ",
+            "÷": " divided by ",
+            "=": " equal to ",
+            "π": " pi ",
+            "°": " degree ",
+            "€": " euros ",
+            "$": " dollars ",
+            "£": " pounds ",
+            "@": " at ",
+            "#": " number ",
+            "°C": " degrees Celsius ",
+            "°F": " degrees Fahrenheit ",
+        }
         
     def load(self, lang):
 
@@ -83,34 +84,100 @@ class SpeechSynthesizer:
         self.active_lang = lang
         print("[load]", lang, proc_mem())
 
-    def process_input(self, text, lang):
+    def clean_text_for_english_tts(self, text: str) -> str:
+        """Clean English text for TTS processing."""
+        if not text:
+            return ""
+            
+        # Remove emojis and markdown
+        text = self.EMOJI_PATTERN.sub("", text)
+        text = self.MD_MARKERS.sub("", text)
+        text = self.BULLETS.sub("", text)
+        
+        # Convert symbols to words
+        for symbol, word in self.SYMBOLS_MAP.items():
+            text = text.replace(symbol, word)
+        
+        # Clean up extra whitespace
+        text = re.sub(r"\s+", " ", text).strip()
+        
+        return text
+
+
+
+    def convert_num_to_urdu_words(self, text: str, translator) -> str:
+        """Convert numbers to Urdu words via English translation for better Urdu TTS."""
+        if not text or not translator:
+            return text
+            
+        numbers = self.NUM_PATTERN.findall(text)
+        
+        for number in numbers:
+            if not number or not number.strip():
+                continue
+            
+            if "." in number:
+                # for decimal numbers like "3.14"
+                whole, decimal = number.split(".", 1)
+                if not whole or not decimal:
+                    continue
+                    
+                whole_words = num2words(int(whole))
+                decimal_digits = [d for d in decimal if d.isdigit()]
+                if not decimal_digits:
+                    continue
+                decimal_words = " ".join(num2words(int(d)) for d in decimal_digits)
+                english_words = f"{whole_words} point {decimal_words}"
+            else:
+                # for whole numbers like "123"
+                english_words = num2words(int(number))
+            
+
+            urdu_words = translator.process_input(english_words, 'en')
+            if urdu_words and urdu_words.strip():
+                text = text.replace(number, urdu_words)
+                    
+        
+        return text
+
+    def process_input(self, text, lang, translator=None):
         self.load(lang)
 
-        # use piper tts
-
         if lang == 'en':
-        # Stream audio directly to speakers
+            # Clean English text for TTS
+            cleaned_text = self.clean_text_for_english_tts(text)
+            
             print(self.voice.config.sample_rate)
-            c_text = clean_text_en(text)
-            print("CLEANED TEXT: \n" + c_text + "\n")
 
-            # Create an output stream and generates audio chunks
-            with sd.OutputStream(
-                samplerate=self.voice.config.sample_rate,
-                channels=1,
-                dtype='int16'
-            ) as stream:
-                for chunk in self.voice.synthesize(c_text):
-                    # Convert the audio bytes to a numpy array
-                    int_data = np.frombuffer(chunk.audio_int16_bytes, dtype=np.int16)
-                    # Write the audio chunks to the buffer
-                    stream.write(int_data)
+            # Collect all audio chunks first
+            audio_chunks = []
+            for chunk in self.voice.synthesize(cleaned_text):
+                # Convert the audio bytes to a numpy array
+                int_data = np.frombuffer(chunk.audio_int16_bytes, dtype=np.int16)
+                audio_chunks.append(int_data)
+            
+            # Concatenate all chunks into a single array
+            if audio_chunks:
+                full_audio = np.concatenate(audio_chunks)
+                
+                # Save to WAV file using scipy
+                wavfile.write("tts_output.wav", self.voice.config.sample_rate, full_audio)
+                print("Audio saved to tts_output.wav")
+                
+                return "tts_output.wav"  # Return the file path
+            return None
         
         elif lang == 'ur':
+            # Convert numbers to Urdu words for better TTS pronunciation
+            if translator:
+                processed_text = self.convert_num_to_urdu_words(text, translator)
+            else:
+                processed_text = text
             
-            # text1 = "یہ اردو متن کو آواز میں تبدیل کرنے کا ایک نمونہ ہے۔"
+            # Clean up extra whitespace
+            processed_text = re.sub(r"\s+", " ", processed_text).strip()
 
-            inputs = self.tokenizer(text, return_tensors="pt")
+            inputs = self.tokenizer(processed_text, return_tensors="pt")
 
             with torch.no_grad():
                 output = self.voice(**inputs).waveform
@@ -119,13 +186,13 @@ class SpeechSynthesizer:
 
             data_np = output.numpy()
             data_np_squeezed = np.squeeze(data_np)
-            wavfile.write("outputs.wav", rate=self.voice.config.sampling_rate, data=data_np_squeezed)
-            sd.play(data_np_squeezed, samplerate=self.voice.config.sampling_rate)
-            sd.wait()
+            wavfile.write("tts_output.wav", rate=self.voice.config.sampling_rate, data=data_np_squeezed)
+            print("Audio saved to tts_output.wav")
+            return "tts_output.wav"  # Return the file path
 
-        print("Audio playback completed!")
-        print("Audio playback completed!")
-        print("[after playback]", proc_mem())
+        print("Audio processing completed!")
+        print("[after processing]", proc_mem())
+        return None  # Return None if no audio was generated
 
 
 
@@ -152,20 +219,20 @@ class SpeechSynthesizer:
     
 
 # print(proc_mem())  # before load
-# synth = SpeechSynthesizer("models/tts/piper-tts-en/en_US-amy-medium.onnx")
+# synth = SpeechSynthesizer("models/tts/piper-tts-en-amy/en_US-amy-medium.onnx")
 # synth.process_input("Hello...this is an Ai tutor's voice, Welcome!", "en")
 # print(proc_mem())  # stays higher (model kept)
 # synth.unload()
 # print(proc_mem()) 
 
-# synth1 = SpeechSynthesizer('models/tts/piper-tts-en/en_US-amy-medium.onnx')
+# synth1 = SpeechSynthesizer('models/tts/piper-tts-en-amy/en_US-amy-medium.onnx')
 # synth1.process_input("Hello this is an AI tutor. Welcome!", 'en')
 # print(proc_mem())  # stays higher (model kept)
 # synth1.unload()
-# print(proc_mem()) 
-# synth2 = SpeechSynthesizer('models/tts/mss-tts-urd-script-arabic')
-# synth2.process_input("یہ اردو متن کو آواز میں تبدیل کرنے کا ایک نمونہ ہے۔", 'ur')
-# print(proc_mem())  # stays higher (model kept)
-# synth2.unload()
-# print(proc_mem()) 
+# # print(proc_mem()) 
+# # synth2 = SpeechSynthesizer('models/tts/mss-tts-urd-script-arabic')
+# # synth2.process_input("یہ اردو متن کو آواز میں تبدیل کرنے کا ایک نمونہ ہے۔", 'ur')
+# # print(proc_mem())  # stays higher (model kept)
+# # synth2.unload()
+# # print(proc_mem()) 
      

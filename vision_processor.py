@@ -8,13 +8,9 @@ import time
 import gc
 from paddleocr import PaddleOCR
 from model_registery import ModelRegistery
-from bidi.algorithm import get_display
 import urduhack
 
-def fix_urdu_ocr(text):
-    n_text = urduhack.normalization.normalize(text)
-    n_text = get_display(n_text)
-    return n_text
+
 
 
 
@@ -34,16 +30,27 @@ class VisionProcessor:
             return  # already correct model
         self.unload()
 
-        # if lang == "en":
-        self.ocr = PaddleOCR(
-            text_detection_model_name=self.det_model_name,
-            text_detection_model_dir=self.det_model_path,
-            text_recognition_model_name=self.rec_model_name,
-            text_recognition_model_dir=self.rec_model_path,
-            use_doc_orientation_classify=False,
-            use_doc_unwarping=False,
-            use_textline_orientation=False,
-        )
+        if lang == "en":
+            self.ocr = PaddleOCR(
+                text_detection_model_name=self.det_model_name,
+                text_detection_model_dir=self.det_model_path,
+                text_recognition_model_name=self.rec_model_name,
+                text_recognition_model_dir=self.rec_model_path,
+                use_doc_orientation_classify=False,
+                use_doc_unwarping=False,
+                use_textline_orientation=False,
+            )
+        elif lang == "ur":
+            self.ocr = PaddleOCR(
+                text_detection_model_name=self.det_model_name,
+                text_detection_model_dir=self.det_model_path,
+                text_recognition_model_name=self.rec_model_name,
+                text_recognition_model_dir=self.rec_model_path,
+                use_doc_orientation_classify=False,
+                use_doc_unwarping=False,
+                use_textline_orientation=False,
+            )
+        
 
         self.active_lang = lang
     
@@ -61,8 +68,10 @@ class VisionProcessor:
             res_data = json_result['res']
             for text in res_data['rec_texts']:
                 extracted_text = extracted_text + "\n " + text
+        fixed_text = urduhack.normalization.normalize(extracted_text)
+
         
-        return extracted_text
+        return fixed_text
           
     def unload(self):
         if self.ocr is not None:
