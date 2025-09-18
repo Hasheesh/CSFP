@@ -4,15 +4,14 @@ This file handles session management functionality for the AI tutor.
 It manages chat sessions, including creation, deletion, renaming, and history loading.
 
 """
-
-import gradio as gr
 from chat_database import ChatDatabase
 
 
 class SessionManager:
-    # enhanced session manager that handles all session operations for the ui
+    """Enhanced session manager that handles all session operations for the UI."""
     
     def __init__(self, db_path="chat_sessions.sqlite3"):
+        """Initializes the SessionManager and connects to the database."""
         self.database = ChatDatabase(db_path)
         self._current_session_id = None
         
@@ -20,17 +19,17 @@ class SessionManager:
         self._initialize_current_session()
 
     def _initialize_current_session(self):
-        # initialize the current session with the latest session from the database
+        """Initializes the current session with the latest session from the database."""
         latest_session_id = self.database.latest_session_id()
         if latest_session_id:
             self._current_session_id = latest_session_id
 
     def _load_chat_history(self, session_id):
-        # load chat history from database
+        """Loads chat history from the database."""
         return self.database.get_messages(session_id)
 
     def generate_title(self, session_id, user_content):
-        # generate a title from the first user message if session is still 'new chat'
+        """Generates a title from the first user message if the session is still named 'New Chat'."""
         try:
             # get current session name
             sessions = self.database.list_sessions()
@@ -45,7 +44,7 @@ class SessionManager:
             print(f"Error generating title: {e}")
 
     def _extract_title(self, content):
-        # extract a meaningful title from user content
+        """Extracts a meaningful title from the user's content."""
         if not content or content.strip() == "[No input]":
             return "New Chat"
         
@@ -54,7 +53,7 @@ class SessionManager:
         
         # remove common prefixes
         prefixes_to_remove = [
-            "[Image OCR]\n", "[Audio]\n", "Student's question:\n"
+            "[Image OCR]\n", "[Audio]\n", "User input:\n"
         ]
         for prefix in prefixes_to_remove:
             if cleaned.startswith(prefix):
@@ -73,41 +72,36 @@ class SessionManager:
         
         return title
 
-    def add_message_to_database(self, session_id, role, content):
-        # add a message to database
-        self.database.add_message(session_id, role, content)
+    def add_message_to_database(self, session_id, role, content, translated_content=None):
+        """Adds a message to the database with optional translated content."""
+        self.database.add_message(session_id, role, content, translated_content)
         
         # auto-generate title from first user message
         if role == "user":
             self.generate_title(session_id, content)
 
     def get_current_session_id(self):
-        # get the current session id
+        """Gets the current session ID."""
         return self._current_session_id
 
     def set_current_session_id(self, session_id):
-        # set the current session id
+        """Sets the current session ID."""
         self._current_session_id = session_id
 
-    # session operations used by ui events
     def list_session_choices(self):
-        # returns session choices for gradio radio
-        # returns list of [label, value] lists for maximum raspberry pi performance
+        """Returns a list of session choices formatted for the Gradio radio component."""
         sessions = self.database.list_sessions()
         return [[f"{s['id']} - {s['name']}", s['id']] for s in sessions]
 
     def new_session(self):
-        # creates a new empty chat in database
+        """Creates a new, empty chat session in the database."""
         session_id = self.database.create_session("New Chat")
-        if session_id is None:
-            # fallback to latest session if creation failed
-            session_id = self.database.latest_session_id()
         # set as current session
         self._current_session_id = session_id
         return session_id
 
     def delete_session(self, session_id):
-        # deletes selected chat and returns new active session
+        """Deletes the selected chat session and returns the new active session ID."""
         self.database.delete_session(session_id)
         # this function also ensures that if it was the last, a new empty chat is created
         new_session_id = self.database.latest_session_id()
@@ -116,7 +110,7 @@ class SessionManager:
         return new_session_id
 
     def rename_session(self, session_id, new_name):
-        # manually rename a session
+        """Manually renames a session."""
         try:
             self.database.rename_session(session_id, new_name)
             return True
@@ -124,26 +118,28 @@ class SessionManager:
             print(f"Error renaming session: {e}")
             return False
 
-    def get_history(self, session_id, current_lang="en", translator=None):
-        # returns history for gradio chatbot display in messages format
+    def get_history(self, session_id, current_lang="en"):
+        """Returns the chat history formatted for the Gradio chatbot display."""
         messages = self._load_chat_history(session_id)
+        display_messages = []
         
-        # translate assistant messages if current language is urdu
-        if current_lang == 'ur' and translator:
-            translated_messages = []
-            for msg in messages:
-                if msg["role"] == "assistant":
-                    # translate assistant messages from english to urdu
-                    translated_content = translator.process_input(msg["content"], "en")
-                    # convert to urdu numerals for display (not words, just numerals ۱۲۳)
-                    # wrap with rtl html attributes
-                    rtl_content = f'<div dir="rtl" lang="ur">{translated_content}</div>'
-                    translated_messages.append({"role": msg["role"], "content": rtl_content})
-                else:
-                    # keep user messages as-is (they're already in original language)
-                    # convert any numbers in user messages to urdu numerals for consistency
-                    user_content = msg["content"]
-                    translated_messages.append({"role": msg["role"], "content": user_content})
-            return translated_messages
-        else:
-            return [{"role": msg["role"], "content": msg["content"]} for msg in messages]
+        for msg in messages:
+            role = msg["role"]
+            # default to the 'content' column (which is always English)
+            content_to_display = msg["content"]
+            
+            if current_lang == 'ur':
+                # for Urdu UI, if a translated version exists, use it.
+                # this applies to both 'user' (original Urdu) and 'assistant' (translated Urdu) roles.
+                if msg.get("translated_content"):
+                    content_to_display = msg["translated_content"]
+            
+            display_messages.append({"role": role, "content": content_to_display})
+            
+        return display_messages
+
+    def get_history_for_llm(self, session_id):
+        """Returns the chat history for the LLM's context, always in the original English format."""
+        messages = self._load_chat_history(session_id)
+        # ensure we only pass the original english content to the LLM
+        return [{"role": msg["role"], "content": msg["content"]} for msg in messages]

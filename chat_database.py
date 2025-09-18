@@ -9,13 +9,13 @@ the parts of code not written by me are referenced from the following sources:
 
 
 import sqlite3
-import json
 from datetime import datetime, timezone
 
 class ChatDatabase:
-    # sqlite database for chat sessions and messages
-    # each session has many messages
-    # if all sessions are deleted then autocreate an empty default session
+    """sqlite database for chat sessions and messages
+       each session has many messages
+       if all sessions are deleted then autocreate an empty default session
+    """
 
     def __init__(self, path="chat_sessions.sqlite3"):
         self.path = path
@@ -43,16 +43,17 @@ class ChatDatabase:
             CREATE TABLE IF NOT EXISTS messages (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 session_id INTEGER NOT NULL,
-                role TEXT NOT NULL CHECK(role IN ('system','user','assistant')),
+                role TEXT NOT NULL,
                 content TEXT NOT NULL,
+                translated_content TEXT,  
                 created_at TEXT NOT NULL,
                 FOREIGN KEY(session_id) REFERENCES sessions(id) ON DELETE CASCADE
             );
             """)
+           
             # create indexes to speed up data retrieval
             cursor.execute("CREATE INDEX IF NOT EXISTS idx_messages_session_id ON messages(session_id);")
             cursor.execute("CREATE INDEX IF NOT EXISTS idx_sessions_updated_at ON sessions(updated_at DESC);")
-            cursor.execute("CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at);")
 
             cursor.close()
         except Exception as e:
@@ -61,13 +62,13 @@ class ChatDatabase:
         # ensure at least one empty chat exists
         self.default_session()
 
-    # helper functions to manage chat sessions 
+    # helper functions to manage chat sessions
     def time_now(self):
         # get current utc time as iso string till seconds
         return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
     def default_session(self):
-        # if there are no sessions, create a new chat
+        # if there are no sessions then create a new chat
         try:
             connection = self.conn
             cursor = connection.cursor()
@@ -80,14 +81,13 @@ class ChatDatabase:
                         "INSERT INTO sessions(name, created_at, updated_at) VALUES (?,?,?)",
                         ("New Chat", now, now),
                     )
-                    connection.commit()  # commit the transaction
+                    connection.commit()
             cursor.close()
         except Exception as e:
             print(e)
 
-    def create_session(self, name=None):
+    def create_session(self, name):
         # create a new chat session
-        name = name or "New Chat"
         now = self.time_now()
         try:
             connection = self.conn
@@ -96,7 +96,7 @@ class ChatDatabase:
                 "INSERT INTO sessions(name, created_at, updated_at) VALUES (?,?,?)",
                 (name, now, now),
             )
-            connection.commit()  # commit the transaction
+            connection.commit()
             session_id = cursor.lastrowid
             cursor.close()
             return session_id
@@ -106,6 +106,7 @@ class ChatDatabase:
 
     def list_sessions(self):
         # return all sessions with newest updated first
+        # order by updated_at and id both to ensure the newest session is first
         try:
             connection = self.conn
             cursor = connection.cursor()
@@ -127,6 +128,7 @@ class ChatDatabase:
         except Exception as e:
             print(e)
             return []
+
     def latest_session_id(self):
         # get the most recently updated session id
         try:
@@ -152,7 +154,7 @@ class ChatDatabase:
                 "UPDATE sessions SET name=?, updated_at=? WHERE id=?",
                 (name, self.time_now(), session_id),
             )
-            connection.commit()  # commit the transaction
+            connection.commit()
             cursor.close()
         except Exception as e:
             print(e)
@@ -163,54 +165,46 @@ class ChatDatabase:
             connection = self.conn
             cursor = connection.cursor()
             cursor.execute("DELETE FROM sessions WHERE id=?", (session_id,))
-            connection.commit()  # commit the transaction
+            connection.commit()
             cursor.close()
             # recreate an empty chat if nothing remains
             self.default_session()
-            # return the latest session id (which might be the newly created default)
+            # return the latest session id after deletion
             return self.latest_session_id()
             
         except Exception as e:
             print(e)
             return None
 
-
-    def add_message(self, session_id, role, content):
-        # add a message to a session
+    def add_message(self, session_id, role, content, translated_content=None):
+        # add a message to a session with optional translated content
         now = self.time_now()
         try:
             connection = self.conn
             cursor = connection.cursor()
             cursor.execute(
-                "INSERT INTO messages(session_id, role, content, created_at) VALUES (?,?,?,?)",
-                (session_id, role, content, now),
+                "INSERT INTO messages(session_id, role, content, translated_content, created_at) VALUES (?,?,?,?,?)",
+                (session_id, role, content, translated_content, now),
             )
             # update session's updated_at so it sorts to the top
             cursor.execute(
                 "UPDATE sessions SET updated_at=? WHERE id=?", (now, session_id)
             )
-            connection.commit()  # commit the transaction
+            connection.commit()
             cursor.close() 
         except Exception as e:
             print(e)
 
-    def get_messages(self, session_id, limit=None):
+    def get_messages(self, session_id):
         # get all messages with oldest first
-        # limit is used to contain the total message length
         # returns a list of message dictionaries
         try:
             connection = self.conn
             cursor = connection.cursor()
-            if limit is not None: 
-                cursor.execute(
-                    "SELECT role, content, created_at FROM messages WHERE session_id=? ORDER BY id ASC LIMIT ?",
-                    (session_id, int(limit))
-                )
-            else:
-                cursor.execute(
-                    "SELECT role, content, created_at FROM messages WHERE session_id=? ORDER BY id ASC",
-                    (session_id,)
-                )
+            cursor.execute(
+                "SELECT role, content, created_at, translated_content FROM messages WHERE session_id=? ORDER BY id ASC",
+                (session_id,)
+            )
             
             results = [] 
             for result in cursor.fetchall():
@@ -218,6 +212,7 @@ class ChatDatabase:
                     "role": result[0],
                     "content": result[1],
                     "created_at": result[2],
+                    "translated_content": result[3],
                 })
             cursor.close()
             return results

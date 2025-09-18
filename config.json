@@ -1,0 +1,374 @@
+{
+    "model_registry": {
+        "llm": {
+            "phi-4-mini": "models/llm/phi-4-mini/Phi-4-mini.gguf",
+            "phi-3-mini": "models/llm/Phi-3-mini-4k-instruct-Q4_K_M.gguf",
+            "phi-3.1-mini": "models/llm/Phi-3.1-mini-4k-instruct-Q4_K_M.gguf",
+            "gemma-2-2b": "models/llm/gemma-2-2b/gemma-2-2b.gguf",
+            "gemma-3-4b": "models/llm/gemma-3-4b/google_gemma-3-4b.gguf",
+            "gemma-3n-4b": "models/llm/gemma-3n-4b/google_gemma-3n-E4B-it-Q4_K_M.gguf",
+            "gemma-3n-4b-q4": "models/llm/google_gemma-3n-E2B-it-Q4_K_M.gguf",
+            "qwen-2.5-1.5b-math": "models/llm/qwen-2.5-1.5b-math-it/Qwen2.5-Math-1.5B-Instruct-Q4_K_M.gguf",
+            "qwen-3-4b-q5": "models/llm/Qwen_Qwen3-4B-Instruct-2507-Q5_K_M.gguf",
+            "qwen-3-4b-q4": "models/llm/Qwen_Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+            "qwen-2.5-3b-q4": "models/llm/Qwen2.5-3B-Instruct-Q4_K_M.gguf",
+            "llama-3.2-3b-q4": "models/llm/FuseChat-Llama-3.2-3B-Instruct-Q4_K_M.gguf",
+            "deepseek-qwen2.5-1.5b": "models/llm/deepseek-r1-distilled-qwen2.5-1.5b/DeepSeek-R1-ReDistill-Qwen-1.5B-v1.0-Q4_K_M.gguf"
+        },
+        "stt": {
+            "whisper-small": "models/stt/whisper-small",
+            "faster-whisper-small": "models/stt/faster-whisper-small"
+        },
+        "tts": {
+            "piper-tts-en-lessac": "models/tts/piper-tts-en-lessac/en_US-lessac-medium.onnx",
+            "piper-tts-en-amy": "models/tts/piper-tts-en-amy/en_US-amy-medium.onnx",
+            "mms-tts-ur": "models/tts/mms-tts-urd-script-arabic"
+        },
+        "ocr": {
+            "PP-OCRv5_mobile_det": "models/ocr/PP-OCRv5_mobile_det",
+            "PP-OCRv5_server_det": "models/ocr/PP-OCRv5_server_det",
+            "en_PP-OCRv5_mobile_rec": "models/ocr/en_PP-OCRv5_mobile_rec",
+            "PP-OCRv3_mobile_det": "models/ocr/PP-OCRv3_mobile_det",
+            "arabic_PP-OCRv3_mobile_rec": "models/ocr/arabic_PP-OCRv3_mobile_rec"
+        },
+        "translation": {
+            "opus-mt-en-ur": "models/translation/opus-mt-en-ur",
+            "opus-mt-ur-en": "models/translation/opus-mt-ur-en",
+            "ct2-opus-mt-en-ur": "models/translation/ct2-opus-mt-en-ur",
+            "nllb-200-600M-Q8": "models/translation/nllb-200-distilled-600M-Q8",
+            "nllb-200-600M-ct2": "models/translation/nllb-200-distilled-600M-ct2"
+        }
+    },
+    "translations": {
+        "en": {
+            "title": "### Offline AI Tutor",
+            "new_chat": "New Chat",
+            "chats": "Chats",
+            "delete_chat": "Delete Current Chat",
+            "language": "Language",
+            "speak_replies": "Speak replies",
+            "tutor_speech": "Tutor Speech",
+            "ai_tutor": "AI Tutor",
+            "input_placeholder": "Type your question or add a file...",
+            "send": "Send",
+            "stop": "Stop",
+            "upload_image": "Upload Image",
+            "record_audio": "Record or Upload Audio",
+            "english": "English",
+            "urdu": "Urdu",
+            "grade_options": [
+                {
+                    "label": "1",
+                    "value": "1"
+                },
+                {
+                    "label": "2",
+                    "value": "2"
+                },
+                {
+                    "label": "3",
+                    "value": "3"
+                },
+                {
+                    "label": "4",
+                    "value": "4"
+                },
+                {
+                    "label": "5",
+                    "value": "5"
+                },
+                {
+                    "label": "6",
+                    "value": "6"
+                },
+                {
+                    "label": "7",
+                    "value": "7"
+                },
+                {
+                    "label": "8",
+                    "value": "8"
+                },
+                {
+                    "label": "9",
+                    "value": "9"
+                },
+                {
+                    "label": "10",
+                    "value": "10"
+                },
+                {
+                    "label": "11",
+                    "value": "11"
+                },
+                {
+                    "label": "12",
+                    "value": "12"
+                }
+            ],
+            "subject_options": [
+                {
+                    "label": "General",
+                    "value": "General"
+                },
+                {
+                    "label": "Math",
+                    "value": "Math"
+                },
+                {
+                    "label": "Science",
+                    "value": "Science"
+                },
+                {
+                    "label": "English",
+                    "value": "English"
+                },
+                {
+                    "label": "Urdu",
+                    "value": "Urdu"
+                },
+                {
+                    "label": "Islamic Studies",
+                    "value": "Islamic Studies"
+                },
+                {
+                    "label": "Pakistan Studies",
+                    "value": "Pakistan Studies"
+                },
+                {
+                    "label": "History",
+                    "value": "History"
+                },
+                {
+                    "label": "Geography",
+                    "value": "Geography"
+                },
+                {
+                    "label": "Computer Science",
+                    "value": "Computer Science"
+                },
+                {
+                    "label": "Art",
+                    "value": "Art"
+                },
+                {
+                    "label": "Music",
+                    "value": "Music"
+                },
+                {
+                    "label": "Physical Education",
+                    "value": "Physical Education"
+                },
+                {
+                    "label": "Health",
+                    "value": "Health"
+                },
+                {
+                    "label": "Social Studies",
+                    "value": "Social Studies"
+                },
+                {
+                    "label": "Other",
+                    "value": "Other"
+                }
+            ]
+        },
+        "ur": {
+            "title": "### آف لائن اے آئی ٹیوٹر",
+            "new_chat": "نئی چیٹ",
+            "chats": "گفتگو",
+            "delete_chat": "موجودہ چیٹ حذف کریں",
+            "language": "زبان",
+            "speak_replies": "جوابات بول کر سنین",
+            "tutor_speech": "ٹیوٹر کی آواز",
+            "ai_tutor": "اے آئی ٹیوٹر",
+            "input_placeholder": "اپنا سوال ٹائپ کریں یا کوئی فائل شامل کریں۔۔۔",
+            "send": "بھیجیں",
+            "stop": "روکیں",
+            "upload_image": "تصویر اپ لوڈ کریں",
+            "record_audio": "آواز ریکارڈ یا اپ لوڈ کریں",
+            "english": "انگریزی",
+            "urdu": "اردو",
+            "grade_options": [
+                {
+                    "label": "1",
+                    "value": "۱"
+                },
+                {
+                    "label": "2",
+                    "value": "۲"
+                },
+                {
+                    "label": "3",
+                    "value": "۳"
+                },
+                {
+                    "label": "4",
+                    "value": "۴"
+                },
+                {
+                    "label": "5",
+                    "value": "۵"
+                },
+                {
+                    "label": "6",
+                    "value": "۶"
+                },
+                {
+                    "label": "7",
+                    "value": "۷"
+                },
+                {
+                    "label": "8",
+                    "value": "۸"
+                },
+                {
+                    "label": "9",
+                    "value": "۹"
+                },
+                {
+                    "label": "10",
+                    "value": "۱۰"
+                },
+                {
+                    "label": "11",
+                    "value": "۱۱"
+                },
+                {
+                    "label": "12",
+                    "value": "۱۲"
+                }
+            ],
+            "subject_options": [
+                {
+                    "label": "جنرل",
+                    "value": "General"
+                },
+                {
+                    "label": "ریاضی",
+                    "value": "Math"
+                },
+                {
+                    "label": "سائنس",
+                    "value": "Science"
+                },
+                {
+                    "label": "انگریزی",
+                    "value": "English"
+                },
+                {
+                    "label": "اردو",
+                    "value": "Urdu"
+                },
+                {
+                    "label": "اسلامیات",
+                    "value": "Islamic Studies"
+                },
+                {
+                    "label": "مطالعہ پاکستان",
+                    "value": "Pakistan Studies"
+                },
+                {
+                    "label": "تاریخ",
+                    "value": "History"
+                },
+                {
+                    "label": "جغرافیہ",
+                    "value": "Geography"
+                },
+                {
+                    "label": "کمپیوٹر سائنس",
+                    "value": "Computer Science"
+                },
+                {
+                    "label": "فنون",
+                    "value": "Art"
+                },
+                {
+                    "label": "موسیقی",
+                    "value": "Music"
+                },
+                {
+                    "label": "جسمانی تعلیم",
+                    "value": "Physical Education"
+                },
+                {
+                    "label": "صحت",
+                    "value": "Health"
+                },
+                {
+                    "label": "سماجی علوم",
+                    "value": "Social Studies"
+                },
+                {
+                    "label": "دیگر",
+                    "value": "Other"
+                }
+            ]
+        }
+    },
+    "system_prompt": "You are a patient and encouraging tutor teaching {subject} to a grade {grade} student. IMPORTANT: Adapt your language and explanations to be appropriate for a grade {grade} student. Use age-appropriate vocabulary and always ask a follow-up question to check understanding.",
+    "user_profile": {
+        "language": "en",
+        "grade": "4",
+        "subject": "General"
+    },
+    "emoji_patterns": {
+        "emoticons": "😀-🙏",
+        "symbols_pictographs": "🌀-🗿",
+        "transport_map": "🚀-🛿",
+        "flags_ios": "🇠-🇿",
+        "dingbats": "✂-➰",
+        "enclosed_characters": "Ⓜ-🙑"
+    },
+    "status_messages": {
+        "en": {
+            "extracting_text": "Extracting Text from Image",
+            "transcribing_audio": "Transcribing Audio",
+            "synthesizing_speech": "Synthesizing Speech",
+            "translating_text": "Translating Text",
+            "generating_response": "Generating Response"
+        },
+        "ur": {
+            "extracting_text": "تصویر سے متن نکال رہے ہیں",
+            "transcribing_audio": "آواز کو متن میں تبدیل کر رہے ہیں",
+            "synthesizing_speech": "آواز بنانے میں",
+            "translating_text": "متن کا ترجمہ کر رہے ہیں",
+            "generating_response": "جواب تیار کر رہے ہیں"
+        }
+    },
+    "urdu_numbers": {
+        "0": "۰",
+        "1": "۱",
+        "2": "۲",
+        "3": "۳",
+        "4": "۴",
+        "5": "۵",
+        "6": "۶",
+        "7": "۷",
+        "8": "۸",
+        "9": "۹"
+    },
+    "tts_patterns": {
+        "md_markers": "(\\*\\*|__|\\*|_)",
+        "bullets": "(?m)^\\s*[*\\-+•●▪︎◦·]\\s+",
+        "num_pattern": "\\b\\d{1,9}(?:\\.\\d+)?\\b"
+    },
+    "tts_symbols_map": {
+        "&": " and ",
+        "%": " percent ",
+        "+": " plus ",
+        "-": " minus ",
+        "÷": " divided by ",
+        "=": " equal to ",
+        "π": " pi ",
+        "°": " degree ",
+        "€": " euros ",
+        "$": " dollars ",
+        "£": " pounds ",
+        "@": " at ",
+        "#": " number ",
+        "°C": " degrees Celsius ",
+        "°F": " degrees Fahrenheit "
+    }
+}
