@@ -1,0 +1,16 @@
+gradio
+Pillow
+transformers
+ctranslate2
+pytesseract
+urduhack
+python-bidi
+paddleocr
+paddlepaddle
+llama-cpp-python
+torch
+scipy
+num2words
+faster-whisper
+numpy
+piper-tts

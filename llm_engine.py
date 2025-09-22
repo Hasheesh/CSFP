@@ -18,6 +18,7 @@ from config_loader import get_system_prompt
 
 class LLMEngine:
     def __init__(self, model_path):
+
         self.llm = None
         self.model_path = model_path
         self.first_load = True
@@ -55,10 +56,10 @@ class LLMEngine:
         
         self.llm = Llama(
             model_path=self.model_path,
-            n_ctx=8192,
+            n_ctx=2048,
+            n_batch=512, # set a smaller batch size to avoid issues on pi
             n_threads=4, # raspberry pi 5 has 4 cores
             n_gpu_layers=0, # disable gpu to avoid issues on pi
-            n_batch=1024, # set a smaller batch size to avoid issues on pi
             seed=1, # set a seed to get consistent results
             use_mlock=False, # disable mlock to avoid issues on pi
             verbose=False, # disable verbose output
@@ -70,7 +71,7 @@ class LLMEngine:
            Deepseek R1 Qwen 1.5B model for math and reasoning works best with direct and simple prompts.
         """
         if subject == "Math":
-            qwen_prompt = f"Use appropriate vocabulary for a grade {grade} student. Ask one simple follow-up question to check understanding. Explain: "
+            qwen_prompt = f"Use appropriate vocabulary for a grade {grade} student. Ask one simple follow-up question. Input: "
             return qwen_prompt
         # for other subjects, we use the system prompt template from config
         return self.system_prompt_template.format(grade=grade, subject=subject)
@@ -144,7 +145,7 @@ class LLMEngine:
             # each chunk contains one choice, which is a dict with a delta key
             choice = chunk["choices"][0]
             # get the delta, which is the new part of the response in this chunk
-            delta = choice.get("delta") or {}
+            delta = choice.get("delta")
             # extract the actual text content from the delta
             part = delta.get("content")
             # if there is content, yield sends this part
@@ -187,7 +188,7 @@ class LLMEngine:
 
         for chunk in stream:
             choice = chunk["choices"][0]
-            delta = choice.get("delta") or {}
+            delta = choice.get("delta")
             # role appears once at the start skip it
             # only print content
             if "role" in delta and role_seen is None:
@@ -207,3 +208,7 @@ class LLMEngine:
         self.chat_history.append({"role": "assistant", "content": answer})
         print()
         return answer
+
+if __name__ == "__main__":
+    llm_engine = LLMEngine("models/llm/deepseek-r1-distilled-qwen2.5-1.5b/DeepSeek-R1-ReDistill-Qwen-1.5B-v1.0-Q4_K_M.gguf")
+    llm_engine.process_input("2 + 2 = ?")

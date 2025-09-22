@@ -1,0 +1,56 @@
+model type,model name,time taken,Memory used (MiB),input,output
+model type,model name,time taken,Memory used (MiB),input,output
+translation,quickmt-ur-en,0.09,2131.79,پودے اپنی خوراک کیسے بناتے ہیں,How plants make their food.
+translation,quickmt-ur-en,0.37,2133.79,فوٹو سنتھیسس کیا ہے؟ مجھے ایک مثال کے ساتھ پائتھاگورین تھیوریم سکھائیں۔ پانی کا چکر کیسے کام کرتا ہے؟,What is Photo Synthesis? Teach me Python Theorem with an example. How does the water cycle work?
+translation,quickmt-ur-en,0.64,2133.79,فوٹو سنتھیسس کیا ہے؟  مجھے ایک مثال کے ساتھ پائتھاگورین تھیوریم سکھائیں۔  پانی کا چکر کیسے کام کرتا ہے؟,What is Photo Synthesis?Teach me Python Theorem with an example.How does the water cycle work?
+translation,quickmt-en-ur,0.10,2131.20,how do plants make their food?,پودے اپنا کھانا کیسے بناتے ہیں؟
+translation,quickmt-en-ur,0.41,2133.70,What is photosynthesis? Teach me the Pythagorean theorem with an example. How does the water cycle work?,Photosynthesis کیا ہے؟ مجھے ایک مثال کے ساتھ Pythagorean theorem سکھائیں. پانی کا سائیکل کیسے کام کرتا ہے؟
+translation,quickmt-en-ur,0.72,2133.82,What is photosynthesis?  Teach me the Pythagorean theorem with an example. How does the water cycle work?,Photosynthesis کیا ہے؟مجھے ایک مثال کے ساتھ Pythagorean theorem سکھائیں.پانی کا سائیکل کیسے کام کرتا ہے؟
+translation,nllb-200-600M-Q8,1.32,2077.94,how do plants make their food?,پودے اپنی خوراک کیسے بناتے ہیں؟
+translation,nllb-200-600M-Q8,2.29,2084.69,What is photosynthesis? Teach me the Pythagorean theorem with an example. How does the water cycle work?,فوٹوسنتھیز کیا ہے؟ مجھے ایک مثال کے ساتھ پیتھاگورین نظریہ سکھائیں۔ پانی کا دورہ کیسے کام کرتا ہے؟
+translation,nllb-200-600M-Q8,3.25,2085.07,What is photosynthesis?  Teach me the Pythagorean theorem with an example. How does the water cycle work?,فوٹوسنتھیز کیا ہے؟ مجھے ایک مثال کے ساتھ پیتھاگورین نظریہ سکھائیں۔ پانی کا دورہ کیسے کام کرتا ہے؟
+translation,nllb-200-600M-Q8,0.21,2085.07,پودے اپنی خوراک کیسے بناتے ہیں,How plants make their own food
+translation,nllb-200-600M-Q8,0.87,2085.07,فوٹو سنتھیسس کیا ہے؟ مجھے ایک مثال کے ساتھ پائتھاگورین تھیوریم سکھائیں۔ پانی کا چکر کیسے کام کرتا ہے؟,What is photo synthesis? teach me Pythagorean theory with an example.
+translation,nllb-200-600M-Q8,1.52,2085.07,فوٹو سنتھیسس کیا ہے؟  مجھے ایک مثال کے ساتھ پائتھاگورین تھیوریم سکھائیں۔  پانی کا چکر کیسے کام کرتا ہے؟,What is photo synthesis? teach me Pythagorean theory with an example.
+translation,quickmt-en-ur-Q8,0.48,1590.57,how do plants make their food?,پودے اپنا کھانا کیسے بناتے ہیں؟
+translation,quickmt-en-ur-Q8,0.74,1592.07,What is photosynthesis? Teach me the Pythagorean theorem with an example. How does the water cycle work?,فتوسنتھیس کیا ہے؟ مجھے ایک مثال کے ساتھ Pythagorean تھیوریم سکھائیں. پانی کا نظام کیسے کام کرتا ہے؟
+translation,quickmt-en-ur-Q8,0.99,1592.32,What is photosynthesis?  Teach me the Pythagorean theorem with an example. How does the water cycle work?,فتوسنتھیس کیا ہے؟ مجھے ایک مثال کے ساتھ Pythagorean تھیوریم سکھائیں. پانی کا نظام کیسے کام کرتا ہے؟
+translation,quickmt-ur-en-Q8,0.43,1877.26,پودے اپنی خوراک کیسے بناتے ہیں,How plants make their own food.
+translation,quickmt-ur-en-Q8,0.66,1878.76,فوٹو سنتھیسس کیا ہے؟ مجھے ایک مثال کے ساتھ پائتھاگورین تھیوریم سکھائیں۔ پانی کا چکر کیسے کام کرتا ہے؟,Teach me the pythagorean theorem with an example of how the water cycle works.
+translation,quickmt-ur-en-Q8,0.89,1879.01,فوٹو سنتھیسس کیا ہے؟  مجھے ایک مثال کے ساتھ پائتھاگورین تھیوریم سکھائیں۔  پانی کا چکر کیسے کام کرتا ہے؟,Teach me the pythagorean theorem with an example of how the water cycle works.
+translation,nllb-200-600M-ct2,how do plants make their food?,پودے اپنے کھانے کو کس طرح تیار کرتے ہیں؟<unk>,4.00,3819.22
+translation,nllb-200-600M-ct2,What is photosynthesis? Teach me the Pythagorean theorem with an example. How does the water cycle work?,فوٹوسنتھیز کیا ہے؟ مجھے ایک مثال کے ساتھ پتاگورین تھیوریم سکھائیں۔ پانی کا سائیکل کیسے کام کرتا ہے؟,7.00,3826.97
+translation,nllb-200-600M-ct2,What is photosynthesis?  Teach me the Pythagorean theorem with an example. How does the water cycle work?,فوٹوسنتھیز کیا ہے؟ مجھے ایک مثال کے ساتھ پتاگورین تھیوریم سکھائیں۔ پانی کا سائیکل کیسے کام کرتا ہے؟,10.14,3826.97
+translation,nllb-200-600M-ct2,پودے اپنی خوراک کیسے بناتے ہیں,How plants make their own food<unk>,0.76,3826.97
+translation,nllb-200-600M-ct2,فوٹو سنتھیسس کیا ہے؟ مجھے ایک مثال کے ساتھ پائتھاگورین تھیوریم سکھائیں۔ پانی کا چکر کیسے کام کرتا ہے؟,Show me the Pythagorean theorem with an example.How does the water cycle work?<unk>,2.72,3826.97
+translation,nllb-200-600M-ct2,فوٹو سنتھیسس کیا ہے؟  مجھے ایک مثال کے ساتھ پائتھاگورین تھیوریم سکھائیں۔  پانی کا چکر کیسے کام کرتا ہے؟,Show me the Pythagorean theorem with an example.How does the water cycle work?<unk>,4.68,3826.97
+translation,m2m100-418M-ct2,0.76,3268.72,how do plants make their food?,کس طرح پودوں کو کھانا کھلانا ہے؟
+translation,m2m100-418M-ct2,2.36,3275.35,What is photosynthesis? Teach me the Pythagorean theorem with an example. How does the water cycle work?,مجھے ایک مثال کے ساتھ پیتاگوئری نظریہ سکھائیں۔ پانی کا سائیکل کیسے کام کرتا ہے؟
+translation,m2m100-418M-ct2,3.99,3275.35,What is photosynthesis?  Teach me the Pythagorean theorem with an example. How does the water cycle work?,مجھے ایک مثال کے ساتھ پیتاگوئری نظریہ سکھائیں۔ پانی کا سائیکل کیسے کام کرتا ہے؟
+translation,m2m100-418M-ct2,0.45,3275.35,پودے اپنی خوراک کیسے بناتے ہیں,How do they make their food?
+translation,m2m100-418M-ct2,2.05,3275.35,فوٹو سنتھیسس کیا ہے؟ مجھے ایک مثال کے ساتھ پائتھاگورین تھیوریم سکھائیں۔ پانی کا چکر کیسے کام کرتا ہے؟,What is Photo Translation?Let me teach Pythagorine Theory with an example.How does water sugar work?
+translation,m2m100-418M-ct2,3.64,3275.47,فوٹو سنتھیسس کیا ہے؟  مجھے ایک مثال کے ساتھ پائتھاگورین تھیوریم سکھائیں۔  پانی کا چکر کیسے کام کرتا ہے؟,What is Photo Translation?Let me teach Pythagorine Theory with an example.How does water sugar work?
+translation,m2m100-418M-Q8,0.28,1895.97,how do plants make their food?,کھانے کو کس طرح کھانا کھلانا چاہئے؟
+translation,m2m100-418M-Q8,1.09,1893.84,What is photosynthesis? Teach me the Pythagorean theorem with an example. How does the water cycle work?,فوٹو سینٹیسیس کیا ہے؟ مجھے ایک مثال کے ساتھ پیتاگور کے نظریہ کو سکھائیں۔ پانی کا سائیکل کیسے کام کرتا ہے؟
+translation,m2m100-418M-Q8,1.90,1898.52,What is photosynthesis?  Teach me the Pythagorean theorem with an example. How does the water cycle work?,فوٹو سینٹیسیس کیا ہے؟ مجھے ایک مثال کے ساتھ پیتاگور کے نظریہ کو سکھائیں۔ پانی کا سائیکل کیسے کام کرتا ہے؟
+translation,m2m100-418M-Q8,0.16,1898.52,پودے اپنی خوراک کیسے بناتے ہیں,How do they make their food?
+translation,m2m100-418M-Q8,0.82,1893.69,فوٹو سنتھیسس کیا ہے؟ مجھے ایک مثال کے ساتھ پائتھاگورین تھیوریم سکھائیں۔ پانی کا چکر کیسے کام کرتا ہے؟,What is Photo Synthesis?Let me teach Pythagorine Theory with an example.How does water sugar work?
+translation,m2m100-418M-Q8,1.49,1898.03,فوٹو سنتھیسس کیا ہے؟  مجھے ایک مثال کے ساتھ پائتھاگورین تھیوریم سکھائیں۔  پانی کا چکر کیسے کام کرتا ہے؟,What is Photo Synthesis?Let me teach Pythagorine Theory with an example.How does water sugar work?
+translation,opus-mt-en-ur,0.19,1684.29,how do plants make their food?,پودے اپنی خوراک کیسے پیدا کرتے ہیں ؟
+translation,opus-mt-en-ur,0.96,1691.77,What is photosynthesis? Teach me the Pythagorean theorem with an example. How does the water cycle work?,مَیں نے اِس کی ایک مثال دی ہے ۔
+translation,opus-mt-en-ur,1.68,1691.29,What is photosynthesis?  Teach me the Pythagorean theorem with an example. How does the water cycle work?,مَیں نے اِس کی ایک مثال دی ہے ۔
+translation,opus-mt-ur-en,0.27,1683.92,پودے اپنی خوراک کیسے بناتے ہیں,How the plant plant builds its own food
+translation,opus-mt-ur-en,0.93,1692.84,فوٹو سنتھیسس کیا ہے؟ مجھے ایک مثال کے ساتھ پائتھاگورین تھیوریم سکھائیں۔ پانی کا چکر کیسے کام کرتا ہے؟,How does the water cycle work?
+translation,opus-mt-ur-en,1.59,1687.99,فوٹو سنتھیسس کیا ہے؟  مجھے ایک مثال کے ساتھ پائتھاگورین تھیوریم سکھائیں۔  پانی کا چکر کیسے کام کرتا ہے؟,How does the water cycle work?
+translation,opus-mt-en-ur-ct2,0.10,1671.68,how do plants make their food?,پودے اپنے خوراک کیسے پیدا کرتے ہیں ؟
+translation,opus-mt-en-ur-ct2,0.52,1673.68,What is photosynthesis? Teach me the Pythagorean theorem with an example. How does the water cycle work?,مَیں نے اِس کی ایک مثال دی جس سے مَیں نے سیکھا کہ پانی کا چکر کیسے بہتا ہے ۔
+translation,opus-mt-en-ur-ct2,0.92,1673.68,What is photosynthesis?  Teach me the Pythagorean theorem with an example. How does the water cycle work?,مَیں نے اِس کی ایک مثال دی جس سے مَیں نے سیکھا کہ پانی کا چکر کیسے بہتا ہے ۔
+translation,opus-mt-ur-en-ct2,0.09,1671.37,پودے اپنی خوراک کیسے بناتے ہیں,How the plant builds its own food
+translation,opus-mt-ur-en-ct2,0.43,1672.87,فوٹو سنتھیسس کیا ہے؟ مجھے ایک مثال کے ساتھ پائتھاگورین تھیوریم سکھائیں۔ پانی کا چکر کیسے کام کرتا ہے؟,"What does the New World Translation, teach me how to do the water cycle with an example?"
+translation,opus-mt-ur-en-ct2,0.76,1672.87,فوٹو سنتھیسس کیا ہے؟  مجھے ایک مثال کے ساتھ پائتھاگورین تھیوریم سکھائیں۔  پانی کا چکر کیسے کام کرتا ہے؟,"What does the New World Translation, teach me how to do the water cycle with an example?"
+translation,opus-mt-en-ur-Q8,0.05,1456.61,how do plants make their food?,پودے اپنے خوراک کیسے پیدا کرتے ہیں ؟
+translation,opus-mt-en-ur-Q8,0.31,1458.49,What is photosynthesis? Teach me the Pythagorean theorem with an example. How does the water cycle work?,مَیں نے اِس کی ایک مثال دی جس سے مَیں نے سیکھا کہ پانی کا چکر کیسے بہتا ہے ۔
+translation,opus-mt-en-ur-Q8,0.57,1458.61,What is photosynthesis?  Teach me the Pythagorean theorem with an example. How does the water cycle work?,مَیں نے اِس کی ایک مثال دی جس سے مَیں نے سیکھا کہ پانی کا چکر کیسے بہتا ہے ۔
+translation,opus-mt-ur-en-Q8,0.05,1457.79,پودے اپنی خوراک کیسے بناتے ہیں,How the plant plant builds its own food
+translation,opus-mt-ur-en-Q8,0.29,1458.92,فوٹو سنتھیسس کیا ہے؟ مجھے ایک مثال کے ساتھ پائتھاگورین تھیوریم سکھائیں۔ پانی کا چکر کیسے کام کرتا ہے؟,"What's New York Times? I taught with an example, how does the water cycle work?"
+translation,opus-mt-ur-en-Q8,0.52,1459.04,فوٹو سنتھیسس کیا ہے؟  مجھے ایک مثال کے ساتھ پائتھاگورین تھیوریم سکھائیں۔  پانی کا چکر کیسے کام کرتا ہے؟,"What's New York Times? I taught with an example, how does the water cycle work?"

@@ -19,7 +19,7 @@ class SpeechRecognizer:
         self.model_path = model_path
         self.device = "cpu"
         self.compute_type = "int8"
-        self.num_threads = 16
+        self.num_threads = 4
         self.beam_size = 1
         self.vad_filter = True
 
@@ -35,7 +35,6 @@ class SpeechRecognizer:
             compute_type=self.compute_type,
             cpu_threads=self.num_threads
         )
-        print(f"[faster-whisper] Successfully loaded {self.model_path} ({self.device}, {self.compute_type})")
 
     def process_input(self, audio_path, lang):
         """Transcribes an audio file to text in the specified language."""
@@ -56,5 +55,5 @@ class SpeechRecognizer:
 
         text_chunks = [seg.text.strip() for seg in segments]
         transcription = " ".join(t for t in text_chunks if t)
-        print(transcription)
+        # print(transcription)
         return transcription

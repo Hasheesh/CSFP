@@ -1,0 +1,5 @@
+model type,model name,time taken,Memory used (MiB),input image,language,output
+ocr,tesseract-ocr-en,0.09,1229.52,en_ocr_test.png,en,This is a test.
+ocr,tesseract-ocr-ur,0.05,1231.50,ur_ocr_test.png,ur,ایک ا کان ٛے۔
+ocr,en_PP-OCRv5_mobile,0.89,1537.52,en_ocr_test.png,en,This is a test.
+ocr,arabic_PP-OCRv3_mobile,0.89,1560.36,ur_ocr_test.png,ur,ءایلامحانب

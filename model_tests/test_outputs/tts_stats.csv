@@ -1,0 +1,21 @@
+model type,model name,input,output,time taken,Memory used (MiB)
+tts,piper-tts-en-amy,"Hello, how are you today?",model_tests/test_outputs/piper_tts_en_text.wav,0.09,1522.00
+tts,piper-tts-en-amy,The temperature is 25.5 degrees Celsius.,model_tests/test_outputs/piper_tts_en_text_n.wav,0.14,1565.09
+tts,piper-tts-en-amy,The equation is 2 + 2 = 4 and π is approximately 3.14. Today is a beautiful day.,model_tests/test_outputs/piper_tts_en_text_l.wav,0.25,1601.11
+tts,piper-tts-en-amy,This is a paragraph text to test how well the TTS system handles extended speech synthesis.   It includes multiple sentences and should demonstrate the quality of the voice synthesis.,model_tests/test_outputs/piper_tts_en_text_p.wav,0.38,1623.23
+tts,mms-tts-en,"Hello, how are you today?",model_tests/test_outputs/mms_tts_en_text.wav,0.40,1543.55
+tts,mms-tts-en,The temperature is 25.5 degrees Celsius.,model_tests/test_outputs/mms_tts_en_text_n.wav,0.50,1564.96
+tts,mms-tts-en,The equation is 2 + 2 = 4 and π is approximately 3.14. Today is a beautiful day.,model_tests/test_outputs/mms_tts_en_text_l.wav,0.70,1644.90
+tts,mms-tts-en,This is a paragraph text to test how well the TTS system handles extended speech synthesis.   It includes multiple sentences and should demonstrate the quality of the voice synthesis.,model_tests/test_outputs/mms_tts_en_text_p.wav,1.82,1798.27
+tts,mms-tts-en,0.52,1549.22,"Hello, how are you today?",model_tests/test_outputs/tts/mms_tts_en_text.wav
+tts,mms-tts-en,0.49,1573.35,The temperature is 25.5 degrees Celsius.,model_tests/test_outputs/tts/mms_tts_en_text_n.wav
+tts,mms-tts-en,0.75,1638.75,The equation is 2 + 2 = 4 and π is approximately 3.14. Today is a beautiful day.,model_tests/test_outputs/tts/mms_tts_en_text_l.wav
+tts,mms-tts-en,1.93,1801.17,This is a paragraph text to test how well the TTS system handles extended speech synthesis.   It includes multiple sentences and should demonstrate the quality of the voice synthesis.,model_tests/test_outputs/tts/mms_tts_en_text_p.wav
+tts,piper-tts-en-amy,0.09,1521.41,"Hello, how are you today?",model_tests/test_outputs/tts/piper_tts_en_text.wav
+tts,piper-tts-en-amy,0.17,1565.62,The temperature is 25.5 degrees Celsius.,model_tests/test_outputs/tts/piper_tts_en_text_n.wav
+tts,piper-tts-en-amy,0.30,1601.62,The equation is 2 + 2 = 4 and π is approximately 3.14. Today is a beautiful day.,model_tests/test_outputs/tts/piper_tts_en_text_l.wav
+tts,piper-tts-en-amy,0.42,1605.62,This is a paragraph text to test how well the TTS system handles extended speech synthesis.   It includes multiple sentences and should demonstrate the quality of the voice synthesis.,model_tests/test_outputs/tts/piper_tts_en_text_p.wav
+tts,mms-tts-ur,0.33,1542.74,ہیلو، آپ کیسے ہیں؟,model_tests/test_outputs/tts/mms_tts_ur_text.wav
+tts,mms-tts-ur,0.16,1546.64,جواب ۴۲ ہے,model_tests/test_outputs/tts/mms_tts_ur_text_n.wav
+tts,mms-tts-ur,0.51,1615.53,یہ ایک طویل متن ہے۔ اس کے دو جملے ہیں۔,model_tests/test_outputs/tts/mms_tts_ur_text_l.wav
+tts,mms-tts-ur,2.27,1941.74,یہ ایک طویل متن ہے جو ٹی ٹی ایس سسٹم کی طویل تقریر کی ترکیب کو کس طرح سنبھالتا ہے اس کا امتحان لینے کے لیے ہے۔   اس میں متعدد جملے شامل ہیں اور آواز کی ترکیب کا معیار ظاہر کرنا چاہیے۔,model_tests/test_outputs/tts/mms_tts_ur_text_p.wav

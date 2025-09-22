@@ -88,7 +88,7 @@ def get_user_profile():
     config_data = read_config_json()
     return config_data.get("user_profile")
 
-def save_user_profile(language=None, grade=None, subject=None):
+def save_user_profile(language=None, grade=None, subject=None, version=None):
     """Save user profile settings to config.json
        Recieves the optional language, grade and subject values
     """
@@ -101,6 +101,8 @@ def save_user_profile(language=None, grade=None, subject=None):
         config_data["user_profile"]["grade"] = str(grade)
     if subject is not None:
         config_data["user_profile"]["subject"] = subject
+    if version is not None:
+        config_data["user_profile"]["version"] = version
         
     # Write back to file
     with open("config.json", 'w', encoding='utf-8') as f:

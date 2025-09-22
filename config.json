@@ -1,19 +1,28 @@
 {
+    "system_prompt": "You are a patient and encouraging tutor teaching {subject} to a grade {grade} student. Use language and explanations appropriate for a grade {grade} student. Always ask a follow-up question to check understanding.",
+    "user_profile": {
+        "language": "en",
+        "grade": "4",
+        "subject": "Math",
+        "version": "x86_64"
+    },
     "model_registry": {
         "llm": {
             "phi-4-mini": "models/llm/phi-4-mini/Phi-4-mini.gguf",
-            "phi-3-mini": "models/llm/Phi-3-mini-4k-instruct-Q4_K_M.gguf",
-            "phi-3.1-mini": "models/llm/Phi-3.1-mini-4k-instruct-Q4_K_M.gguf",
+            "phi-3-mini": "models/llm/phi-3-mini/Phi-3-mini-4k-instruct-Q4_K_M.gguf",
+            "phi-3.1-mini": "models/llm/phi-3.1-mini/Phi-3.1-mini-4k-instruct-Q4_K_M.gguf",
             "gemma-2-2b": "models/llm/gemma-2-2b/gemma-2-2b.gguf",
-            "gemma-3-4b": "models/llm/gemma-3-4b/google_gemma-3-4b.gguf",
-            "gemma-3n-4b": "models/llm/gemma-3n-4b/google_gemma-3n-E4B-it-Q4_K_M.gguf",
-            "gemma-3n-4b-q4": "models/llm/google_gemma-3n-E2B-it-Q4_K_M.gguf",
-            "qwen-2.5-1.5b-math": "models/llm/qwen-2.5-1.5b-math-it/Qwen2.5-Math-1.5B-Instruct-Q4_K_M.gguf",
-            "qwen-3-4b-q5": "models/llm/Qwen_Qwen3-4B-Instruct-2507-Q5_K_M.gguf",
-            "qwen-3-4b-q4": "models/llm/Qwen_Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
-            "qwen-2.5-3b-q4": "models/llm/Qwen2.5-3B-Instruct-Q4_K_M.gguf",
-            "llama-3.2-3b-q4": "models/llm/FuseChat-Llama-3.2-3B-Instruct-Q4_K_M.gguf",
-            "deepseek-qwen2.5-1.5b": "models/llm/deepseek-r1-distilled-qwen2.5-1.5b/DeepSeek-R1-ReDistill-Qwen-1.5B-v1.0-Q4_K_M.gguf"
+            "gemma-3-4b-Q4": "models/llm/gemma-3-4b/google_gemma-3-4b-it-qat-Q4_K_M.gguf",
+            "gemma-3-4b-Q40": "models/llm/gemma-3-4b/google_gemma-3-4b-it-qat-Q4_0.gguf",
+            "gemma-3-1b-Q6": "models/llm/gemma-3-1b/google_gemma-3-1b-it-Q6_K_L.gguf",
+            "gemma-3-1b-Q4": "models/llm/gemma-3-1b/google_gemma-3-1b-it-Q4_K_M.gguf",
+            "gemma-3-1b-Q40": "models/llm/gemma-3-1b/google_gemma-3-1b-it-qat-Q4_0.gguf",
+            "qwen-3-4b-Q5": "models/llm/qwen3-4b/Qwen_Qwen3-4B-Instruct-2507-Q5_K_M.gguf",
+            "qwen-3-4b-Q4": "models/llm/Qwen_Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+            "qwen-2.5-3b-Q4": "models/llm/qwen-2.5-3b/Qwen2.5-3B-Instruct-Q4_K_M.gguf",
+            "llama-3.2-3b-Q4": "models/llm/fusechat-llama-3.2-3B/FuseChat-Llama-3.2-3B-Instruct-Q4_K_M.gguf",
+            "deepseek-qwen2.5-1.5b-Q4": "models/llm/deepseek-r1-distilled-qwen2.5-1.5b/DeepSeek-R1-ReDistill-Qwen-1.5B-v1.0-Q4_K_M.gguf",
+            "deepseek-qwen2.5-1.5b-Q40": "models/llm/deepseek-r1-distilled-qwen2.5-1.5b/DeepSeek-R1-ReDistill-Qwen-1.5B-v1.0-Q4_0.gguf"
         },
         "stt": {
             "whisper-small": "models/stt/whisper-small",
@@ -22,6 +31,7 @@
         "tts": {
             "piper-tts-en-lessac": "models/tts/piper-tts-en-lessac/en_US-lessac-medium.onnx",
             "piper-tts-en-amy": "models/tts/piper-tts-en-amy/en_US-amy-medium.onnx",
+            "mms-tts-en": "models/tts/mms-tts-eng",
             "mms-tts-ur": "models/tts/mms-tts-urd-script-arabic"
         },
         "ocr": {
@@ -34,9 +44,18 @@
         "translation": {
             "opus-mt-en-ur": "models/translation/opus-mt-en-ur",
             "opus-mt-ur-en": "models/translation/opus-mt-ur-en",
-            "ct2-opus-mt-en-ur": "models/translation/ct2-opus-mt-en-ur",
+            "opus-mt-en-ur-ct2": "models/translation/opus-mt-en-ur-ct2",
+            "opus-mt-ur-en-ct2": "models/translation/opus-mt-ur-en-ct2",
+            "opus-mt-en-ur-Q8": "models/translation/opus-mt-en-ur-Q8",
+            "opus-mt-ur-en-Q8": "models/translation/opus-mt-ur-en-Q8",
             "nllb-200-600M-Q8": "models/translation/nllb-200-distilled-600M-Q8",
-            "nllb-200-600M-ct2": "models/translation/nllb-200-distilled-600M-ct2"
+            "nllb-200-600M-ct2": "models/translation/nllb-200-distilled-600M-ct2",
+            "m2m100-418M-ct2": "models/translation/m2m100-418-ct2",
+            "m2m100-418M-Q8": "models/translation/m2m100-418-Q8",
+            "quickmt-ur-en": "models/translation/quickmt-ur-en",
+            "quickmt-en-ur": "models/translation/quickmt-en-ur",
+            "quickmt-en-ur-Q8": "models/translation/quickmt-en-ur-Q8",
+            "quickmt-ur-en-Q8": "models/translation/quickmt-ur-en-Q8"
         }
     },
     "translations": {
@@ -306,12 +325,6 @@
                 }
             ]
         }
-    },
-    "system_prompt": "You are a patient and encouraging tutor teaching {subject} to a grade {grade} student. IMPORTANT: Adapt your language and explanations to be appropriate for a grade {grade} student. Use age-appropriate vocabulary and always ask a follow-up question to check understanding.",
-    "user_profile": {
-        "language": "en",
-        "grade": "4",
-        "subject": "General"
     },
     "emoji_patterns": {
         "emoticons": "😀-🙏",

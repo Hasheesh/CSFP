@@ -1,0 +1,5 @@
+model type,model name,input,output,time taken,Memory used (MiB)
+stt,whisper-small,2.98,3291.80,This is a test of speech recognition,This is a test of speech recognition.
+stt,whisper-small,3.19,3231.41,یہ تقریر کی شناخت کا امتحان ہے۔,یہ تقریب کی شناخت کا انتحان ہے
+stt,faster-whisper-small,1.43,1947.78,This is a test of speech recognition,This is a test of speech recognition.
+stt,faster-whisper-small,1.52,1949.78,یہ تقریر کی شناخت کا امتحان ہے۔,یہ تقریب کی شناخت کا انتحان ہے

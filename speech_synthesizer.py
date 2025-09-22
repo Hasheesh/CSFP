@@ -59,7 +59,6 @@ class SpeechSynthesizer:
             return
 
         if lang == 'en':
-            print("this is mode path: " + self.model_path)
             self.voice = PiperVoice.load(self.model_path)
             
         elif lang == 'ur':
@@ -131,8 +130,6 @@ class SpeechSynthesizer:
             # clean english text for TTS
             cleaned_text = self.clean_text(text)
             
-            print(self.voice.config.sample_rate)
-
             # collect all audio chunks first
             audio_chunks = []
             for chunk in self.voice.synthesize(cleaned_text):

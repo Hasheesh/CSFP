@@ -13,10 +13,36 @@ The parts of code not written by me are referenced from the following sources:
 - implementation of ui language change from https://www.gradio.app/guides/internationalization
 
 """
+import os
+import logging
+import warnings
+
+# disable gpu usage for raspberry pi
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
+# disable warnings
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+
+# Suppress various logging outputs
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+os.environ["TRANSFORMERS_VERBOSITY"] = "error"
+
+
+warnings.filterwarnings("ignore")
+warnings.filterwarnings("ignore", category=UserWarning)
+logging.getLogger("tensorflow").setLevel(logging.ERROR)
+
+
+
 import gradio as gr
+import gc
+import os
 from orchestrator import Orchestrator
 from session_manager import SessionManager
 from config_loader import get_translations, get_grade_options, get_subject_options, get_user_profile, save_user_profile
+
+# Define the absolute path for the database file
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(APP_DIR, "chat_sessions.sqlite3")
 
 # load translation dictionaries from config
 TRANSLATIONS = get_translations()
@@ -24,20 +50,20 @@ TRANSLATIONS = get_translations()
 # create an I18n instance with translations for English and Urdu
 i18n = gr.I18n(**TRANSLATIONS)
 
-
 def create_gradio_interface():
     """Create and configure the Gradio interface."""
-    
-    # initialize the main orchestrator and session manager
-    orchestrator = Orchestrator()
-    session_manager = SessionManager()
     
     # load saved user profile
     user_profile = get_user_profile()
     saved_language = user_profile.get("language")
     saved_grade = user_profile.get("grade")
     saved_subject = user_profile.get("subject")
+    saved_version = user_profile.get("version", "x86_64")
 
+    # initialize the main orchestrator and session manager
+    orchestrator = Orchestrator(version=saved_version) 
+    session_manager = SessionManager(db_path=DB_PATH)
+    
     css = """
     /*  RTL styling helper classes */ 
     .rtl {
@@ -64,7 +90,15 @@ def create_gradio_interface():
         with gr.Row():
             # sidebar
             with gr.Column(scale=1, min_width=260):
-
+                # create the version selector
+                version_choices = ["x86_64", "arm"]
+                version_selector = gr.Dropdown(
+                    choices=version_choices,
+                    value=saved_version,
+                    label="Version: ",
+                    interactive=True,
+                )
+                
                 # create the grade selector (always English numerals for values and labels)
                 grade_choices = [(opt["label"], opt["value"]) for opt in get_grade_options()]    
                 grade_selector = gr.Dropdown(
@@ -73,7 +107,7 @@ def create_gradio_interface():
                     label="Grade: ",
                     interactive=True,
                 )
-                
+
                 # create the subject selector from saved language
                 subject_choices = [(opt["label"], opt["value"]) for opt in get_subject_options(saved_language)]
                 subject_selector = gr.Dropdown(
@@ -164,6 +198,7 @@ def create_gradio_interface():
                         label=TRANSLATIONS["en"]["upload_image"],
                         sources=["upload", "webcam", "clipboard"],
                         scale=1,
+                        webcam_options=gr.WebcamOptions(mirror=False),
                     )
                     # create the audio input interface
                     aud_input = gr.Audio(
@@ -182,7 +217,11 @@ def create_gradio_interface():
                 # if no choices, get fresh list, ChatDatabase ensures at least one session exists
                 choices = session_manager.list_session_choices()
 
-            selected_value = current_value
+            # if current_value is None or not in the new choices, select the first available chat
+            if current_value is None or not any(choice[1] == current_value for choice in choices):
+                selected_value = choices[0][1]
+            else:
+                selected_value = current_value
             
             if selected_value:
                 # determine current language
@@ -205,12 +244,16 @@ def create_gradio_interface():
                 sid, 
                 current_lang=current_lang,
             )
+            gc.collect()
             return gr.update(choices=choices, value=sid), history
             
         def on_delete_chat(current_value: int, lang_choice: str):
             """Handle chat deletion."""
-            session_manager.delete_session(current_value)
-            return refresh_sessions_and_history(lang_choice=lang_choice)
+            # Delete the session and get the new active session ID
+            new_session_id = session_manager.delete_session(current_value)
+            gc.collect()
+            # After deletion, refresh and auto-select the new session
+            return refresh_sessions_and_history(current_value=new_session_id, lang_choice=lang_choice)
 
 
         def on_select_chat(selected_value: int, lang_choice: str):
@@ -257,6 +300,12 @@ def create_gradio_interface():
                 history  
             )
         
+        def on_version_change(version_value):
+            """Handle version selection change."""
+            save_user_profile(version=version_value)
+            orchestrator.switch_version(version_value)
+            gr.Info(f"Version changed to {version_value}. Models reloaded.")
+
         def on_grade_change(grade_value):
             """Handle grade selection change."""
             save_user_profile(grade=grade_value)
@@ -304,6 +353,7 @@ def create_gradio_interface():
                 final_audio_file = audio_file
                 yield final_history, final_audio_file, gr.update(interactive=False), gr.update(interactive=True)
             
+            gc.collect()
             # final update to re-enable send and disable stop
             yield final_history, final_audio_file, gr.update(interactive=True), gr.update(interactive=False)
 
@@ -315,6 +365,12 @@ def create_gradio_interface():
         new_chat_btn.click(fn=on_new_chat, inputs=[lang_selector], outputs=[chat_radio, chatbot])
         delete_btn.click(fn=on_delete_chat, inputs=[chat_radio, lang_selector], outputs=[chat_radio, chatbot])
         chat_radio.change(fn=on_select_chat, inputs=[chat_radio, lang_selector], outputs=[chat_radio, chatbot])
+
+        version_selector.change(
+            fn=on_version_change,
+            inputs=[version_selector],
+            outputs=[]
+        )
 
         lang_selector.change(
             fn=on_language_change,
@@ -398,4 +454,12 @@ def create_gradio_interface():
 
 if __name__ == "__main__":
     demo = create_gradio_interface()
-    demo.launch(i18n=i18n)
+    demo.queue(
+        max_size=8,            # small queue to avoid out of memory errors
+        status_update_rate=0.2 # smoother UI updates for streaming
+    ).launch(
+        # server_name="0.0.0.0",
+        # server_port=7860,
+        share=False,
+        i18n=i18n
+    )
